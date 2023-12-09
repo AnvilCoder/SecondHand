@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
-import ru.ac.secondhand.dto.Register;
+import ru.ac.secondhand.dto.user.Register;
 import ru.ac.secondhand.service.AuthService;
 
 @Service

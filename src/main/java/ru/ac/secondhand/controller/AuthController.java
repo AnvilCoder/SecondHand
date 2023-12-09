@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import ru.ac.secondhand.dto.Login;
-import ru.ac.secondhand.dto.Register;
+import ru.ac.secondhand.dto.user.Login;
+import ru.ac.secondhand.dto.user.Register;
 import ru.ac.secondhand.service.AuthService;
 
 @Slf4j
