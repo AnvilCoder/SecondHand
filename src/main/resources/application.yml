@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/2handDB
+    username: 2hand
+    password: 2!hand
+  liquibase:
+    change-log: classpath:liquibase/changelog-master.yml
+    contexts: default
+    default-schema: public
+    drop-first: false
+    enabled: true
