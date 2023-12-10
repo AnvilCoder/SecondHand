@@ -1,4 +1,4 @@
-package ru.ac.secondhand.dto;
+package ru.ac.secondhand.dto.user;
 
 import lombok.Data;
 
