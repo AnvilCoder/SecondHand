@@ -38,7 +38,7 @@ import ru.ac.secondhand.dto.ad.ExtendedAd;
                 description = "UNAUTHORIZED: пользователь не авторизован"),
         @ApiResponse(responseCode = "500",
                 description = "INTERNAL_SERVER_ERROR: Ошибка сервера при обработке запроса")})
-public class AdController {
+public class AdsController {
 
 //    private final AdService adService;
 
