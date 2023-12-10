@@ -1,9 +1,14 @@
 package ru.ac.secondhand.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.ac.secondhand.dto.comment.Comment;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
 
 @RestController
@@ -29,6 +35,13 @@ import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
 public class CommentController {
 
 
+    @Operation(summary = "Получить комментарии")
+    @ApiResponse(
+            responseCode = "200",
+            description = "OK: возвращает комментарий",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    array = @ArraySchema(schema = @Schema(implementation = Comment.class)))
+    )
     @GetMapping("/{commentId}")
     public ResponseEntity<?> getComment(@PathVariable("adId") Integer adId) {
         return ResponseEntity.ok().build();
