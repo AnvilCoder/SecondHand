@@ -3,7 +3,9 @@ package ru.ac.secondhand.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,46 +13,41 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name = "ads")
-public class Ad {
+@Table(name = "comments")
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Integer id;
 
-    private String title;
-    private String description;
-    private Integer price;
+    private String text;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "image_id", referencedColumnName = "id")
-    private Image image;
+    @Column(name = "created_at")
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User user;
 
-    @OneToMany(mappedBy = "ad")
-    private List<Comment> comments;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ad_id", referencedColumnName = "id")
+    private Ad ad;
 
     @Override
     public String toString() {
-        return "Ad{" +
+        return "Comment{" +
                "id=" + id +
-               ", title='" + title + '\'' +
-               ", description='" + description + '\'' +
-               ", price=" + price +
+               ", text='" + text + '\'' +
+               ", createdAt=" + createdAt +
                '}';
     }
 }

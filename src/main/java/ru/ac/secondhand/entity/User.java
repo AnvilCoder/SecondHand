@@ -3,14 +3,17 @@ package ru.ac.secondhand.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import ru.ac.secondhand.entity.enums.Role;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -20,37 +23,47 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Table(name = "ads")
-public class Ad {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     private Integer id;
 
-    private String title;
-    private String description;
-    private Integer price;
-
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    private String username;
+    private String password;
 
-    @OneToMany(mappedBy = "ad")
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+    private String phone;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Ad> ads;
+
+    @OneToMany(mappedBy = "user")
     private List<Comment> comments;
-
 
     @Override
     public String toString() {
-        return "Ad{" +
+        return "User{" +
                "id=" + id +
-               ", title='" + title + '\'' +
-               ", description='" + description + '\'' +
-               ", price=" + price +
+               ", username='" + username + '\'' +
+               ", password='" + password + '\'' +
+               ", firstName='" + firstName + '\'' +
+               ", lastName='" + lastName + '\'' +
+               ", phone='" + phone + '\'' +
+               ", role=" + role +
                '}';
     }
 }
