@@ -3,9 +3,9 @@ package ru.ac.secondhand.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ru.ac.secondhand.entity.enums.Role;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -31,39 +31,25 @@ public class User {
     @EqualsAndHashCode.Include
     private Integer id;
 
+    @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
 
     private String username;
     private String password;
-
-    @Column(name = "first_name")
     private String firstName;
-
-    @Column(name = "last_name")
     private String lastName;
     private String phone;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user")
     private List<Ad> ads;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
-
-    @Override
-    public String toString() {
-        return "User{" +
-               "id=" + id +
-               ", username='" + username + '\'' +
-               ", password='" + password + '\'' +
-               ", firstName='" + firstName + '\'' +
-               ", lastName='" + lastName + '\'' +
-               ", phone='" + phone + '\'' +
-               ", role=" + role +
-               '}';
-    }
 }

@@ -3,9 +3,9 @@ package ru.ac.secondhand.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,24 +30,16 @@ public class Comment {
 
     private String text;
 
-    @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User user;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ad_id", referencedColumnName = "id")
     private Ad ad;
-
-    @Override
-    public String toString() {
-        return "Comment{" +
-               "id=" + id +
-               ", text='" + text + '\'' +
-               ", createdAt=" + createdAt +
-               '}';
-    }
 }

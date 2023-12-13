@@ -3,6 +3,7 @@ package ru.ac.secondhand.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -32,25 +33,17 @@ public class Ad {
     private String description;
     private Integer price;
 
+    @ToString.Exclude
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "ad")
     private List<Comment> comments;
-
-
-    @Override
-    public String toString() {
-        return "Ad{" +
-               "id=" + id +
-               ", title='" + title + '\'' +
-               ", description='" + description + '\'' +
-               ", price=" + price +
-               '}';
-    }
 }
