@@ -6,19 +6,17 @@ import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
 
-import java.util.List;
-
 public interface AdService {
 
-    List<Ads> getAll();
+    Ads getAll();
 
     ExtendedAd getAdInfo(Integer id);
 
-    List<Ads> getUsersAds();
+    Ads getUsersAds();
 
     Ad createAd(CreateOrUpdateAd ad);
 
-    Ad uptdateAd(Integer id, CreateOrUpdateAd ad);
+    Ad updateAd(Integer id, CreateOrUpdateAd ad);
 
     String updateAdImage(Integer id, MultipartFile image);
 
