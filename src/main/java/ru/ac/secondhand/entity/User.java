@@ -1,11 +1,14 @@
 package ru.ac.secondhand.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import ru.ac.secondhand.entity.enums.Role;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -36,6 +39,7 @@ public class User {
     @JoinColumn(name = "image_id", referencedColumnName = "id")
     private Image image;
 
+    @Column(unique = true, nullable = false)
     private String username;
     private String password;
     private String firstName;
@@ -45,11 +49,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Ad> ads;
 
+    @JsonIgnore
     @ToString.Exclude
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments;
 }
