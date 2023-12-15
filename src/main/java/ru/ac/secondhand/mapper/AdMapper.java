@@ -3,14 +3,11 @@ package ru.ac.secondhand.mapper;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
 import ru.ac.secondhand.entity.Ad;
-import ru.ac.secondhand.entity.Image;
 
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +20,7 @@ public interface AdMapper {
     @Mapping(target = "comments", ignore = true)
     Ad toAdEntity(CreateOrUpdateAd ad);
 
-    @Mapping(target = "image", source = "image", qualifiedByName = "imageToString")
+    @Mapping(target = "image", expression = "java(ad.getImage() != null ? \"/ads/image/\" + ad.getImage().getId() : null)")
     @Mapping(target = "pk", source = "ad.id")
     @Mapping(target = "authorFirstName", source = "ad.user.firstName")
     @Mapping(target = "authorLastName", source = "ad.user.lastName")
@@ -31,7 +28,7 @@ public interface AdMapper {
     @Mapping(target = "phone", source = "ad.user.phone")
     ExtendedAd toExtendedAd(Ad ad);
 
-    @Mapping(target = "image", source = "image", qualifiedByName = "imageToString")
+    @Mapping(target = "image", expression = "java(ad.getImage() != null ? \"/ads/image/\" + ad.getImage().getId() : null)")
     @Mapping(target = "author", source = "ad.user.id")
     @Mapping(target = "pk", source = "ad.id")
     ru.ac.secondhand.dto.ad.Ad toAdDTO(Ad ad);
@@ -44,13 +41,5 @@ public interface AdMapper {
         adsDTO.setResults(adDTOs);
         adsDTO.setCount(adDTOs.size());
         return adsDTO;
-    }
-
-    @Named("imageToString")
-    default String imageToString(Image image) {
-        if (image == null) {
-            return null;
-        }
-        return Base64.getEncoder().encodeToString(image.getImage());
     }
 }

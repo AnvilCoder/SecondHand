@@ -1,4 +1,4 @@
-package ru.ac.secondhand.secondhand;
+package ru.ac.secondhand;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
