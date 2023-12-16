@@ -27,6 +27,7 @@ import ru.ac.secondhand.dto.ad.Ad;
 import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
+import ru.ac.secondhand.service.AdService;
 
 @RestController
 @RequestMapping("ads")
@@ -40,7 +41,7 @@ import ru.ac.secondhand.dto.ad.ExtendedAd;
                 description = "INTERNAL_SERVER_ERROR: Ошибка сервера при обработке запроса")})
 public class AdsController {
 
-//    private final AdService adService;
+    private final AdService adService;
 
     @Operation(summary = "Получить список всех объявлений")
     @ApiResponse(
@@ -51,7 +52,8 @@ public class AdsController {
     )
     @GetMapping
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok().build();
+        Ads ads = adService.getAll();
+        return ResponseEntity.ok(ads);
     }
 
     @Operation(summary = "Получить список всех пользователей",
@@ -71,7 +73,8 @@ public class AdsController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<?> getAdInfo(@PathVariable Integer id) {
-        return ResponseEntity.ok().build();
+        ExtendedAd ad = adService.getAdInfo(id);
+        return ResponseEntity.ok(ad);
     }
 
     @Operation(summary = "Получить список объявлений пользователя")
@@ -83,7 +86,8 @@ public class AdsController {
     )
     @GetMapping("/me")
     public ResponseEntity<?> getUsersAds() { // из контекста тащить
-        return ResponseEntity.ok().build();
+        Ads ads = adService.getUsersAds();
+        return ResponseEntity.ok(ads);
     }
 
     @Operation(summary = "Создать объявление")
@@ -95,7 +99,8 @@ public class AdsController {
     )
     @PostMapping
     public ResponseEntity<?> createAdd(@RequestBody CreateOrUpdateAd ad) {
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        Ad createdAd = adService.createAd(ad);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
     }
 
     @Operation(summary = "Изменить объявление")
@@ -118,7 +123,8 @@ public class AdsController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAd(@PathVariable Integer id,
                                       @RequestBody CreateOrUpdateAd ad) {
-        return ResponseEntity.ok().build();
+        Ad updatedAd = adService.updateAd(id, ad);
+        return ResponseEntity.ok(updatedAd);
     }
 
 
@@ -159,6 +165,7 @@ public class AdsController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAd(@PathVariable Integer id) {
+        adService.deleteAd(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
