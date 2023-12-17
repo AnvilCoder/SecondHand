@@ -12,7 +12,7 @@ import ru.ac.secondhand.utils.TestUtils;
 
 import java.util.List;
 
-class AdDTOMapperTest {
+class AdMapperTest {
 
     private AdMapper mapper = Mappers.getMapper(AdMapper.class);
 
