@@ -3,6 +3,7 @@ package ru.ac.secondhand.mapper;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import ru.ac.secondhand.dto.ad.AdDTO;
 import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
@@ -31,10 +32,10 @@ public interface AdMapper {
     @Mapping(target = "image", expression = "java(ad.getImage() != null ? \"/ads/image/\" + ad.getImage().getId() : null)")
     @Mapping(target = "author", source = "ad.user.id")
     @Mapping(target = "pk", source = "ad.id")
-    ru.ac.secondhand.dto.ad.Ad toAdDTO(Ad ad);
+    AdDTO toAdDTO(Ad ad);
 
     default Ads toAds(List<Ad> ads) {
-        List<ru.ac.secondhand.dto.ad.Ad> adDTOs = ads.stream()
+        List<AdDTO> adDTOs = ads.stream()
                 .map(this::toAdDTO)
                 .collect(Collectors.toList());
         Ads adsDTO = new Ads();
