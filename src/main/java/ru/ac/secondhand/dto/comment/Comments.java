@@ -1,12 +1,14 @@
 package ru.ac.secondhand.dto.comment;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class Comments {
 
-    private final Integer count;
-    private final List<Comment> comments;
+    private Integer count;
+    private List<CommentDTO> comments;
 }
