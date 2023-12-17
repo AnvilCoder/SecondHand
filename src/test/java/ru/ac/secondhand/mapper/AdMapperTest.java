@@ -7,10 +7,8 @@ import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
 import ru.ac.secondhand.entity.Ad;
-import ru.ac.secondhand.entity.Image;
 import ru.ac.secondhand.utils.TestUtils;
 
-import java.util.Base64;
 import java.util.List;
 
 class AdMapperTest {
@@ -39,7 +37,7 @@ class AdMapperTest {
         Assertions.assertThat(extendedAd.getAuthorLastName()).isEqualTo(ad.getUser().getLastName());
         Assertions.assertThat(extendedAd.getDescription()).isEqualTo(ad.getDescription());
         Assertions.assertThat(extendedAd.getEmail()).isEqualTo(ad.getUser().getUsername());
-        Assertions.assertThat(ad.getImage().getImage()).asBase64Encoded().isEqualTo(extendedAd.getImage());
+        Assertions.assertThat(extendedAd.getImage()).isEqualTo(String.format("/ads/image/%d", ad.getImage().getId()));
         Assertions.assertThat(extendedAd.getPhone()).isEqualTo(ad.getUser().getPhone());
         Assertions.assertThat(extendedAd.getPrice()).isEqualTo(ad.getPrice());
         Assertions.assertThat(extendedAd.getTitle()).isEqualTo(ad.getTitle());
@@ -52,7 +50,7 @@ class AdMapperTest {
         ru.ac.secondhand.dto.ad.Ad adDTO = mapper.toAdDTO(ad);
 
         Assertions.assertThat(ad.getUser().getId()).isEqualTo(adDTO.getAuthor());
-        Assertions.assertThat((ad.getImage().getImage())).asBase64Encoded().isEqualTo(adDTO.getImage());
+        Assertions.assertThat(adDTO.getImage()).isEqualTo(String.format("/ads/image/%d", ad.getImage().getId()));
         Assertions.assertThat(ad.getId()).isEqualTo(adDTO.getPk());
         Assertions.assertThat(ad.getPrice()).isEqualTo(adDTO.getPrice());
         Assertions.assertThat(ad.getTitle()).isEqualTo(adDTO.getTitle());
@@ -67,20 +65,5 @@ class AdMapperTest {
         Assertions.assertThat(adsDTO).isNotNull();
         Assertions.assertThat(adsDTO.getCount()).isEqualTo(ads.size());
         Assertions.assertThat(adsDTO.getResults().size()).isEqualTo(ads.size());
-    }
-
-    @Test
-    public void shouldConvertImageToBase64String() {
-        Image image = TestUtils.getImage();
-
-        String expected = Base64.getEncoder().encodeToString(image.getImage());
-        String actual = mapper.imageToString(image);
-
-        Assertions.assertThat(expected).isEqualTo(actual);
-    }
-
-    @Test
-    public void shouldReturnNullForNullImage() {
-        Assertions.assertThat(mapper.imageToString(null)).isNull();
     }
 }
