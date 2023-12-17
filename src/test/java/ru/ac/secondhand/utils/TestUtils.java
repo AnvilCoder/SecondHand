@@ -1,6 +1,8 @@
 package ru.ac.secondhand.utils;
 
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
+import ru.ac.secondhand.dto.user.RegisterDTO;
+import ru.ac.secondhand.dto.user.UpdateUserDTO;
 import ru.ac.secondhand.entity.Ad;
 import ru.ac.secondhand.entity.Image;
 import ru.ac.secondhand.entity.User;
@@ -52,7 +54,27 @@ public class TestUtils {
         user.setLastName("last");
         user.setPhone("79998886655");
         user.setRole(Role.USER);
+        user.setImage(getImage());
         return user;
+    }
+
+    public static RegisterDTO getRegisterDTO() {
+        RegisterDTO registerDTO = new RegisterDTO();
+        registerDTO.setUsername("username@gmail.com");
+        registerDTO.setPassword("password");
+        registerDTO.setFirstName("first");
+        registerDTO.setLastName("last");
+        registerDTO.setPhone("79998886655");
+        registerDTO.setRole(Role.USER);
+        return registerDTO;
+    }
+
+    public static UpdateUserDTO getUpdateUserDTO() {
+        UpdateUserDTO updateUserDTO = new UpdateUserDTO();
+        updateUserDTO.setFirstName("updateFirst");
+        updateUserDTO.setLastName("updateLast");
+        updateUserDTO.setPhone("12345678900");
+        return updateUserDTO;
     }
 
     public static Image getImage() {
