@@ -1,7 +1,7 @@
 package ru.ac.secondhand.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.ac.secondhand.dto.ad.Ad;
+import ru.ac.secondhand.dto.ad.AdDTO;
 import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
@@ -14,9 +14,9 @@ public interface AdService {
 
     Ads getUsersAds();
 
-    Ad createAd(CreateOrUpdateAd ad);
+    AdDTO createAd(CreateOrUpdateAd ad);
 
-    Ad updateAd(Integer id, CreateOrUpdateAd ad);
+    AdDTO updateAd(Integer id, CreateOrUpdateAd ad);
 
     String updateAdImage(Integer id, MultipartFile image);
 

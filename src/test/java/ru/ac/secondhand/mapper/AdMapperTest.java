@@ -3,6 +3,7 @@ package ru.ac.secondhand.mapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import ru.ac.secondhand.dto.ad.AdDTO;
 import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
@@ -47,7 +48,7 @@ class AdMapperTest {
     @Test
     void shouldMapAdEntityToAdDTO() {
         Ad ad = TestUtils.getAdEntity();
-        ru.ac.secondhand.dto.ad.Ad adDTO = mapper.toAdDTO(ad);
+        AdDTO adDTO = mapper.toAdDTO(ad);
 
         Assertions.assertThat(ad.getUser().getId()).isEqualTo(adDTO.getAuthor());
         Assertions.assertThat(adDTO.getImage()).isEqualTo(String.format("/ads/image/%d", ad.getImage().getId()));
