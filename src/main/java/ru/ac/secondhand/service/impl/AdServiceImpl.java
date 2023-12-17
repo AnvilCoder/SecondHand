@@ -2,8 +2,6 @@ package ru.ac.secondhand.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,9 +15,9 @@ import ru.ac.secondhand.entity.User;
 import ru.ac.secondhand.exception.AdNotFoundException;
 import ru.ac.secondhand.mapper.AdMapper;
 import ru.ac.secondhand.repository.AdRepository;
-import ru.ac.secondhand.repository.UserRepository;
 import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.service.ImageService;
+import ru.ac.secondhand.service.UserService;
 
 import java.util.List;
 
@@ -30,7 +28,7 @@ import java.util.List;
 public class AdServiceImpl implements AdService {
 
     private final AdRepository adRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final AdMapper mapper;
     private final ImageService imageService;
 
@@ -56,14 +54,14 @@ public class AdServiceImpl implements AdService {
     @Override
     @Transactional(readOnly = true)
     public Ads getUsersAds() {
-        User user = getUser();
+        User user = userService.findUser();
         List<Ad> ads = adRepository.findAdsByUserId(user.getId());
         return mapper.toAds(ads);
     }
 
     @Override
     public AdDTO createAd(CreateOrUpdateAd adDTO) {
-        User user = getUser();
+        User user = userService.findUser();
         Ad ad = mapper.toAdEntity(adDTO);
         ad.setUser(user);
         adRepository.save(ad);
@@ -111,11 +109,5 @@ public class AdServiceImpl implements AdService {
         });
         log.info("Ad {} {} deleted", ad.getId(), ad.getTitle());
         adRepository.delete(ad);
-    }
-
-    private User getUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        return userRepository.findByUsername(username);
     }
 }
