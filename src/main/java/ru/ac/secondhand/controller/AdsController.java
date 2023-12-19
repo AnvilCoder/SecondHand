@@ -23,10 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import ru.ac.secondhand.dto.ad.Ad;
+import ru.ac.secondhand.dto.ad.AdDTO;
 import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
+import ru.ac.secondhand.service.AdService;
 
 @RestController
 @RequestMapping("ads")
@@ -40,7 +41,7 @@ import ru.ac.secondhand.dto.ad.ExtendedAd;
                 description = "INTERNAL_SERVER_ERROR: Ошибка сервера при обработке запроса")})
 public class AdsController {
 
-//    private final AdService adService;
+    private final AdService adService;
 
     @Operation(summary = "Получить список всех объявлений")
     @ApiResponse(
@@ -51,7 +52,8 @@ public class AdsController {
     )
     @GetMapping
     public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok().build();
+        Ads ads = adService.getAll();
+        return ResponseEntity.ok(ads);
     }
 
     @Operation(summary = "Получить список всех пользователей",
@@ -71,7 +73,8 @@ public class AdsController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<?> getAdInfo(@PathVariable Integer id) {
-        return ResponseEntity.ok().build();
+        ExtendedAd ad = adService.getAdInfo(id);
+        return ResponseEntity.ok(ad);
     }
 
     @Operation(summary = "Получить список объявлений пользователя")
@@ -83,7 +86,8 @@ public class AdsController {
     )
     @GetMapping("/me")
     public ResponseEntity<?> getUsersAds() { // из контекста тащить
-        return ResponseEntity.ok().build();
+        Ads ads = adService.getUsersAds();
+        return ResponseEntity.ok(ads);
     }
 
     @Operation(summary = "Создать объявление")
@@ -91,11 +95,12 @@ public class AdsController {
             responseCode = "201",
             description = "CREATED: объявление создано",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = Ad.class))
+                    schema = @Schema(implementation = AdDTO.class))
     )
     @PostMapping
     public ResponseEntity<?> createAdd(@RequestBody CreateOrUpdateAd ad) {
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        AdDTO createdAd = adService.createAd(ad);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
     }
 
     @Operation(summary = "Изменить объявление")
@@ -104,7 +109,7 @@ public class AdsController {
                     responseCode = "200",
                     description = "OK: объявление изменено",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Ad.class))
+                            schema = @Schema(implementation = AdDTO.class))
             ),
             @ApiResponse(
                     responseCode = "403",
@@ -118,7 +123,8 @@ public class AdsController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAd(@PathVariable Integer id,
                                       @RequestBody CreateOrUpdateAd ad) {
-        return ResponseEntity.ok().build();
+        AdDTO updatedAd = adService.updateAd(id, ad);
+        return ResponseEntity.ok(updatedAd);
     }
 
 
@@ -139,7 +145,8 @@ public class AdsController {
     @PatchMapping("/{id}/image")
     public ResponseEntity<?> updateAdImage(@PathVariable("id") Integer id,
                                            @RequestParam("image") MultipartFile image) {
-        return ResponseEntity.ok("Изображение обновлено");
+        String imageURL = adService.updateAdImage(id, image); //TODO: написать нормальную загрузку
+        return ResponseEntity.ok(imageURL);
     }
 
     @Operation(summary = "Удалить объявление")
@@ -159,6 +166,7 @@ public class AdsController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAd(@PathVariable Integer id) {
+        adService.deleteAd(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -3,7 +3,7 @@ package ru.ac.secondhand.dto.ad;
 import lombok.Data;
 
 @Data
-public class Ad { // response
+public class AdDTO { // response
 
     private Integer author;
     private String image;
