@@ -1,7 +1,6 @@
 package ru.ac.secondhand.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,11 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import ru.ac.secondhand.dto.comment.Comment;
+import ru.ac.secondhand.dto.comment.CommentDTO;
+import ru.ac.secondhand.dto.comment.Comments;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
 
 @RestController
-@RequestMapping("/ads/{adId}/comments")
+@RequestMapping("/ads")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Комментарии", description = "Интерфейс для управления комментариями.")
@@ -39,15 +39,15 @@ import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
 public class CommentController {
 
 
-    @Operation(summary = "Получить комментарий.")
+    @Operation(summary = "Получить комментарии объявления.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Комментарий найден.",
+            @ApiResponse(responseCode = "200", description = "Комментарии найдены.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Comment.class))),
-            @ApiResponse(responseCode = "404", description = "Комментарий не найден.")
+                            schema = @Schema(implementation = Comments.class))),
+            @ApiResponse(responseCode = "404", description = "Комментарии не найдены.")
     })
-    @GetMapping("/{commentId}")
-    public ResponseEntity<?> getComment(@PathVariable("adId") Integer adId) {
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<?> getComments(@PathVariable("id") Integer adId) {
         return ResponseEntity.ok().build();
     }
 
@@ -55,11 +55,11 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комментарий успешно добавлен.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Comment.class))),
+                            schema = @Schema(implementation = CommentDTO.class))),
             @ApiResponse(responseCode = "404", description = "Комментарий не найден.")
     })
-    @PostMapping
-    public ResponseEntity<?> addComment(@PathVariable("adId") Integer adId,
+    @PostMapping("/{id}/comments")
+    public ResponseEntity<?> addComment(@PathVariable("id") Integer adId,
                                         @RequestBody CreateOrUpdateComment commentRequest) {
         return ResponseEntity.ok().build();
     }
@@ -68,11 +68,11 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комментарий успешно удален.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Comment.class))),
+                            schema = @Schema(implementation = CommentDTO.class))),
             @ApiResponse(responseCode = "403", description = "Нехватает прав для этой команды."),
             @ApiResponse(responseCode = "404", description = "Комментарий не найден.")
     })
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable("adId") Integer adId,
                                            @PathVariable("commentId") Integer commentId) {
         return ResponseEntity.ok().build();
@@ -82,25 +82,13 @@ public class CommentController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комментарий успешно обновлен.",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = Comment.class))),
+                            schema = @Schema(implementation = CommentDTO.class))),
             @ApiResponse(responseCode = "403", description = "Нехватает прав для этой команды."),
             @ApiResponse(responseCode = "404", description = "Комментарий не найден.")
     })
-    @PutMapping("/{commentId}")
+    @PutMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId,
                                            @RequestBody CreateOrUpdateComment commentRequest) {
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(summary = "Получить все комментарии к объявлению.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Список комментариев успешно получен.",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            array = @ArraySchema(schema = @Schema(implementation = Comment.class)))),
-            @ApiResponse(responseCode = "404", description = "Объявление не найдено.")
-    })
-    @GetMapping("")
-    public ResponseEntity<?> getAllComments(@PathVariable("adId") Integer adId) {
         return ResponseEntity.ok().build();
     }
 }

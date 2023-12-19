@@ -9,5 +9,5 @@ public class Ads {
 
     private Integer count;
 
-    private List<Ad> results;
+    private List<AdDTO> results;
 }

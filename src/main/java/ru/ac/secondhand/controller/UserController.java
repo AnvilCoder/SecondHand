@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.dto.user.NewPassword;
-import ru.ac.secondhand.dto.user.UpdateUser;
-import ru.ac.secondhand.dto.user.User;
+import ru.ac.secondhand.dto.user.UpdateUserDTO;
+import ru.ac.secondhand.dto.user.UserDTO;
 import ru.ac.secondhand.service.UserService;
 
 @RestController
@@ -50,23 +50,23 @@ public class UserController {
     @ApiResponse(
             responseCode = "200", description = "OK: данные пользователя найдены",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = User.class))
+                    schema = @Schema(implementation = UserDTO.class))
     )
     @GetMapping("/me")
     public ResponseEntity<?> getUserData() {
-        User user = userService.getUserData();
-        return ResponseEntity.ok(user);
+        UserDTO userDTO = userService.getUserData();
+        return ResponseEntity.ok(userDTO);
     }
 
     @Operation(summary = "Обновление информации об авторизованном пользователе")
     @ApiResponse(
             responseCode = "200", description = "OK: данные пользователя обновлены",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = UpdateUser.class))
+                    schema = @Schema(implementation = UpdateUserDTO.class))
     )
     @PatchMapping("/me")
-    public ResponseEntity<?> updateUserData(UpdateUser updateUser) {
-        UpdateUser user = userService.updateUser(updateUser);
+    public ResponseEntity<?> updateUserData(UpdateUserDTO updateUserDTO) {
+        UpdateUserDTO user = userService.updateUser(updateUserDTO);
         return ResponseEntity.ok(user);
     }
 
@@ -74,7 +74,7 @@ public class UserController {
     @ApiResponse(
             responseCode = "200", description = "OK: аватар обновлен",
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                    schema = @Schema(implementation = UpdateUser.class))
+                    schema = @Schema(implementation = UpdateUserDTO.class))
     )
     @PatchMapping("/me/image")
     public ResponseEntity<?> updateUserAvatar(@RequestPart MultipartFile image) {
