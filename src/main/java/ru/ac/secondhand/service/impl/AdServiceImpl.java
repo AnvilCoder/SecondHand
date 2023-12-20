@@ -110,4 +110,20 @@ public class AdServiceImpl implements AdService {
         log.info("Ad {} {} deleted", ad.getId(), ad.getTitle());
         adRepository.delete(ad);
     }
+
+    /**
+     * Получает объявление по его идентификатору.
+     *
+     * @param adId Идентификатор объявления, которое нужно получить.
+     * @return Найденное объявление.
+     * @throws AdNotFoundException если объявление с указанным идентификатором не найдено.
+     */
+    @Override
+    public Ad getAdById(Integer adId) {
+        log.info("Fetching Ad with id: {}", adId);
+        return adRepository.findById(adId).orElseThrow(() -> {
+            log.warn("Ad not found for id: {}", adId);
+            return new AdNotFoundException("Ad not found for id: " + adId);
+        });
+    }
 }
