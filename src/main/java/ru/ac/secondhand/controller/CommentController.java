@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +24,8 @@ import org.springframework.web.client.HttpServerErrorException;
 import ru.ac.secondhand.dto.comment.CommentDTO;
 import ru.ac.secondhand.dto.comment.Comments;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
+import ru.ac.secondhand.entity.Comment;
+import ru.ac.secondhand.service.CommentService;
 
 @RestController
 @RequestMapping("/ads")
@@ -38,6 +41,8 @@ import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
                 content = @Content(schema = @Schema(implementation = HttpServerErrorException.InternalServerError.class)))})
 public class CommentController {
 
+    private final CommentService commentService;
+
 
     @Operation(summary = "Получить комментарии объявления.")
     @ApiResponses(value = {
@@ -48,7 +53,8 @@ public class CommentController {
     })
     @GetMapping("/{id}/comments")
     public ResponseEntity<?> getComments(@PathVariable("id") Integer adId) {
-        return ResponseEntity.ok().build();
+        Comments comments = commentService.getComments(adId);
+        return ResponseEntity.ok(comments);
     }
 
     @Operation(summary = "Добавить новый комментарий.")
@@ -61,7 +67,8 @@ public class CommentController {
     @PostMapping("/{id}/comments")
     public ResponseEntity<?> addComment(@PathVariable("id") Integer adId,
                                         @RequestBody CreateOrUpdateComment commentRequest) {
-        return ResponseEntity.ok().build();
+        CommentDTO comment = commentService.createComment(commentRequest, adId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(comment);
     }
 
     @Operation(summary = "Удалить комментарий.")
@@ -75,7 +82,8 @@ public class CommentController {
     @DeleteMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable("adId") Integer adId,
                                            @PathVariable("commentId") Integer commentId) {
-        return ResponseEntity.ok().build();
+        commentService.delete(adId, commentId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Обновить/редактировать комментарий.")
@@ -89,6 +97,7 @@ public class CommentController {
     @PutMapping("/{adId}/comments/{commentId}")
     public ResponseEntity<?> updateComment(@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId,
                                            @RequestBody CreateOrUpdateComment commentRequest) {
-        return ResponseEntity.ok().build();
+        CommentDTO updateCommentDTO = commentService.updateComment(adId, commentId, commentRequest);
+        return ResponseEntity.ok(updateCommentDTO);
     }
 }
