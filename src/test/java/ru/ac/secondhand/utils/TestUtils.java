@@ -84,16 +84,15 @@ public class TestUtils {
     }
 
     public static User getUserEntity() {
-        User user = new User();
-        user.setId(USER_ID);
-        user.setUsername("username@gmail.com");
-        user.setPassword("password");
-        user.setFirstName("first");
-        user.setLastName("last");
-        user.setPhone("79998886655");
-        user.setRole(Role.USER);
-        user.setImage(getImage());
-        return user;
+        return User.builder().
+        id(USER_ID).
+        username("username@gmail.com").
+        password("password").
+        firstName("first").
+        lastName("last").
+        phone("79998886655").
+        role(Role.USER).
+        image(getImage()).build();
     }
 
     public static RegisterDTO getRegisterDTO() {
