@@ -13,8 +13,8 @@ import ru.ac.secondhand.exception.UserNotFoundException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private ResponseEntity<Object> buildResponseEntity(ApiMessageError apiError) {
-        return new ResponseEntity<>(apiError, apiError.getStatus());
+    private ResponseEntity<Object> buildResponseEntity(ApiMessageError apiMessageError) {
+        return new ResponseEntity<>(apiMessageError, apiMessageError.getStatus());
     }
 
     @ExceptionHandler(AdNotFoundException.class)
