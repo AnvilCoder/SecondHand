@@ -1,11 +1,14 @@
 package ru.ac.secondhand.utils.GEH;
 
+import liquibase.pro.packaged.O;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.ac.secondhand.exception.AdNotFoundException;
+import ru.ac.secondhand.exception.CommentNotFoundException;
+import ru.ac.secondhand.exception.UserNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -15,7 +18,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(AdNotFoundException.class)
-    public ResponseEntity<Object> AdNotFoundException(AdNotFoundException e) {
+    public ResponseEntity<Object> handleAdNotFoundException(AdNotFoundException e) {
+        ApiMessageError apiMessageError = new ApiMessageError(HttpStatus.NOT_FOUND, e.getMessage());
+        return buildResponseEntity(apiMessageError);
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<Object> handleCommentNotFoundException(CommentNotFoundException e) {
+        ApiMessageError apiMessageError = new ApiMessageError(HttpStatus.NOT_FOUND, e.getMessage());
+        return buildResponseEntity(apiMessageError);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    protected ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException e) {
         ApiMessageError apiMessageError = new ApiMessageError(HttpStatus.NOT_FOUND, e.getMessage());
         return buildResponseEntity(apiMessageError);
     }
