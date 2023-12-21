@@ -18,6 +18,7 @@ import ru.ac.secondhand.repository.AdRepository;
 import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.service.ImageService;
 import ru.ac.secondhand.service.UserService;
+import ru.ac.secondhand.utils.MethodLog;
 
 import java.util.List;
 
@@ -50,7 +51,7 @@ public class AdServiceImpl implements AdService {
     private final AdMapper mapper;
     private final ImageService imageService;
 
-    private static String AD_NOT_FOUND_MSG = "Ad with [id=%s] not found";
+    private static final String AD_NOT_FOUND_MSG = "Ad with [id=%d] not found";
 
     /**
      * Получает список всех объявлений из репозитория.
@@ -246,5 +247,26 @@ public class AdServiceImpl implements AdService {
             log.warn("Ad not found for id: {}", adId);
             return new AdNotFoundException("Ad not found for id: " + adId);
         });
+    }
+
+    /**
+     * Проверка, что юзер является владельцем объявления,
+     * для предоставления ему право на удаление/обновление
+     *
+     * @param username - имя пользователя
+     * @param id - id объявления
+     */
+    public boolean isOwner(String username, Integer id) {
+        log.info("Method {}, user {}, ad {}", MethodLog.getMethodName(), username, id);
+
+        Ad ad = adRepository.findById(id).orElseThrow(() -> {
+            log.warn(AD_NOT_FOUND_MSG, id);
+            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
+        });
+        if (!ad.getUser().getUsername().equals(username)) {
+            log.warn("Trying to access foreign ad {} by user {}", id, username);
+            return false;
+        }
+        return true;
     }
 }
