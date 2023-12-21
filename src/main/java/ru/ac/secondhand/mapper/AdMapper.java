@@ -12,6 +12,22 @@ import ru.ac.secondhand.entity.Ad;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Маппер для преобразования между объектами объявлений и их DTO представлениями.
+ * <p>
+ * Этот интерфейс определён с использованием MapStruct для автоматического маппинга
+ * данных между сущностями объявлений ({@code Ad}) и различными DTO ({@code CreateOrUpdateAd},
+ * {@code ExtendedAd}, {@code AdDTO}, {@code Ads}). Он обеспечивает гибкость и безопасность типов
+ * при конвертации данных в приложении.
+ * </p>
+ * <p>
+ * Интерфейс содержит методы для преобразования сущности объявления в DTO,
+ * в том числе методы для создания расширенных и сокращённых представлений объявления.
+ * Также предусмотрен метод {@code toAds} для преобразования списка объявлений в их DTO представления.
+ * </p>
+ *
+ * @author fifimova
+ */
 @Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface AdMapper {
 
