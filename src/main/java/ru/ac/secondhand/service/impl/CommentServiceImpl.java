@@ -71,8 +71,7 @@ public class CommentServiceImpl implements CommentService {
         log.info("Attempting to create a new comment for Ad [{}]", adId);
         Ad ad = getAdById(adId);
 
-        Comment newComment = new Comment();
-        newComment.setText(comment.getText());
+        Comment newComment = mapper.toComment(comment);
         newComment.setAd(ad);
         newComment.setUser(ad.getUser());
         newComment.setCreatedAt(LocalDateTime.now());
@@ -121,9 +120,6 @@ public class CommentServiceImpl implements CommentService {
                     return new CommentNotFoundException(String.format("Comment [%d] not found ", commentId));
                 });
         updateComment.setText(commentRequest.getText());
-        updateComment.setAd(ad);
-        updateComment.setUser(ad.getUser());
-        updateComment.setCreatedAt(LocalDateTime.now());
         commentRepository.save(updateComment);
         log.info("Comment [{}] for ad [{}] successfully updated", commentId, adId);
 
