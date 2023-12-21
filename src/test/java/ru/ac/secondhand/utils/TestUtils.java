@@ -130,7 +130,7 @@ public class TestUtils {
     public static Image getImage() {
         Image image = new Image();
         image.setId(IMAGE_ID);
-        image.setImage(BYTE_ARRAY);
+        image.setImagePath(ADD_IMAGE_PATH);
         return image;
     }
 
