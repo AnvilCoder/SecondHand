@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,6 +24,6 @@ public class Image {
     @EqualsAndHashCode.Include
     private Integer id;
 
-    @Lob
-    private byte[] image;
+    @Column(name = "image_path")
+    private String imagePath;
 }

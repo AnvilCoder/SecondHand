@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.entity.Image;
+import ru.ac.secondhand.exception.ImageSaveException;
 import ru.ac.secondhand.repository.ImageRepository;
 import ru.ac.secondhand.service.ImageService;
 
+import java.io.File;
 import java.io.IOException;
 
 @Service
@@ -28,13 +30,25 @@ public class ImageServiceImpl implements ImageService {
     public Image saveImage(MultipartFile imageFile) {
         Image image = new Image();
         try {
-            image.setImage(imageFile.getBytes());
+            String directoryPath = System.getProperty("user.dir") + "/images/";;
+            String filename = imageFile.getOriginalFilename();
+            String filePath = directoryPath + filename;
+
+            File directory = new File(directoryPath);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            File file = new File(filePath);
+            imageFile.transferTo(file);
+
+            image.setImagePath(filePath);
             image = imageRepository.save(image);
-            log.info("Image saved [{}]", image.getId());
+            log.info("Image saved with path [{}]", filePath);
             return image;
         } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
+            log.error("Error saving image: {}", e.getMessage());
+            throw new ImageSaveException("Failed to save image", e);
         }
     }
 
