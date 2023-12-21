@@ -1,6 +1,8 @@
 package ru.ac.secondhand.dto.ad;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Класс, представляющий расширенные данные объявления.
@@ -14,6 +16,8 @@ import lombok.Data;
  * @author fifimova
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ExtendedAd {
 
     private Integer pk;

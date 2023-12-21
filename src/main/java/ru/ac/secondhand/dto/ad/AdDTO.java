@@ -1,6 +1,8 @@
 package ru.ac.secondhand.dto.ad;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Data Transfer Object (DTO) для представления объявления.
@@ -17,7 +19,9 @@ import lombok.Data;
  * @author fifimova
  */
 @Data
-public class AdDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class AdDTO { 
 
     private Integer author;
     private String image;

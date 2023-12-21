@@ -1,6 +1,8 @@
 package ru.ac.secondhand.dto.ad;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -19,6 +21,8 @@ import java.util.List;
  * @author fifimova
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Ads {
 
     private Integer count;
