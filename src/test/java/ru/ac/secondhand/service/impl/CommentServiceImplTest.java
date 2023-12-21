@@ -81,6 +81,7 @@ public class CommentServiceImplTest {
         CommentDTO expectedCommentDTO = TestUtils.getCommentDTO();
 
         when(adService.getAdById(adId)).thenReturn(ad);
+        when(mapper.toComment(createOrUpdateComment)).thenReturn(newComment);
         when(commentRepository.save(any(Comment.class))).thenReturn(newComment);
         when(mapper.toCommentDTO(any(Comment.class))).thenReturn(expectedCommentDTO);
 
@@ -88,6 +89,7 @@ public class CommentServiceImplTest {
 
         assertEquals(expectedCommentDTO, actualCommentDTO);
         verify(adService).getAdById(adId);
+        verify(mapper).toComment(createOrUpdateComment);
         verify(commentRepository).save(any(Comment.class));
         verify(mapper).toCommentDTO(any(Comment.class));
     }
