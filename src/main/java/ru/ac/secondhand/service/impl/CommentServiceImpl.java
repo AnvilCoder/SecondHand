@@ -14,6 +14,7 @@ import ru.ac.secondhand.exception.CommentNotFoundException;
 import ru.ac.secondhand.mapper.CommentMapper;
 import ru.ac.secondhand.repository.AdRepository;
 import ru.ac.secondhand.repository.CommentRepository;
+import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.service.CommentService;
 
 import java.time.LocalDateTime;
@@ -26,23 +27,9 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
-    private final AdRepository adRepository;
+    private final AdService adService;
     private final CommentMapper mapper;
 
-    /**
-     * Получает объявление по его идентификатору.
-     *
-     * @param adId Идентификатор объявления, которое нужно получить.
-     * @return Найденное объявление.
-     * @throws AdNotFoundException если объявление с указанным идентификатором не найдено.
-     */
-    private Ad getAdById(Integer adId) {
-        log.info("Fetching Ad with id: {}", adId);
-        return adRepository.findById(adId).orElseThrow(() -> {
-            log.warn("Ad not found for id: {}", adId);
-            return new AdNotFoundException("Ad not found for id: " + adId);
-        });
-    }
 
     /**
      * Получает все комментарии к конкретному объявлению.
@@ -54,7 +41,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional(readOnly = true)
     public Comments getComments(Integer adId) {
         log.info("Fetching comments for adId: {}", adId);
-        Ad ad = getAdById(adId);
+        Ad ad = adService.getAdById(adId);
         List<Comment> comments = commentRepository.findByAdId(adId);
         return mapper.toComments(comments);
     }
@@ -69,7 +56,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDTO createComment(CreateOrUpdateComment comment, Integer adId) {
         log.info("Attempting to create a new comment for Ad [{}]", adId);
-        Ad ad = getAdById(adId);
+        Ad ad = adService.getAdById(adId);
 
         Comment newComment = mapper.toComment(comment);
         newComment.setAd(ad);
@@ -91,7 +78,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public void delete(Integer adId, Integer commentId) {
         log.info("Trying to delete a comment for id: {}", adId);
-        getAdById(adId);
+        adService.getAdById(adId);
         Comment deleteComment = commentRepository.findByAdIdAndId(adId, commentId)
                 .orElseThrow(() -> {
                     log.warn("Comment [{}] not found for update", commentId);
@@ -113,7 +100,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public CommentDTO updateComment(Integer adId, Integer commentId, CreateOrUpdateComment commentRequest) {
         log.info("Starting update of comment [{}] for ad [{}]", commentId, adId);
-        Ad ad = getAdById(adId);
+        Ad ad = adService.getAdById(adId);
         Comment updateComment = commentRepository.findById(commentId)
                 .orElseThrow(() -> {
                     log.warn("Comment [{}] not found for update", commentId);
