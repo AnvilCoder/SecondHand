@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: liquibase/scripts/13_init_schema.sql
+  - include:
+      file: liquibase/scripts/26_refactor image tabl.sql
