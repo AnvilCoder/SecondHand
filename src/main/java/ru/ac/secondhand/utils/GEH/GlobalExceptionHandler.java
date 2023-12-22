@@ -9,6 +9,8 @@ import ru.ac.secondhand.exception.AdNotFoundException;
 import ru.ac.secondhand.exception.CommentNotFoundException;
 import ru.ac.secondhand.exception.UserNotFoundException;
 
+import java.io.IOException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -37,7 +39,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AccessDeniedException.class)
     protected ResponseEntity<Object> handleAccessDenied(AccessDeniedException ex) {
         ApiMessageError apiMessageError = new ApiMessageError(HttpStatus.FORBIDDEN,
-                "Доступ запрещен!");
+                "Access is denied!");
+        return buildResponseEntity(apiMessageError);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<?> handleIOException(IOException ex) {
+        ApiMessageError apiMessageError = new ApiMessageError(HttpStatus.INTERNAL_SERVER_ERROR,
+                "Error with file processing: " + ex.getMessage());
         return buildResponseEntity(apiMessageError);
     }
 
