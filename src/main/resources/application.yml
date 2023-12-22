@@ -9,3 +9,10 @@ spring:
     default-schema: public
     drop-first: false
     enabled: true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        show_sql: true
+        ddl-auto: validate
+        use_sql_comments: true
