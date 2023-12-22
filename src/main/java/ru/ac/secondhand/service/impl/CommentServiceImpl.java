@@ -9,13 +9,12 @@ import ru.ac.secondhand.dto.comment.Comments;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
 import ru.ac.secondhand.entity.Ad;
 import ru.ac.secondhand.entity.Comment;
-import ru.ac.secondhand.exception.AdNotFoundException;
 import ru.ac.secondhand.exception.CommentNotFoundException;
 import ru.ac.secondhand.mapper.CommentMapper;
-import ru.ac.secondhand.repository.AdRepository;
 import ru.ac.secondhand.repository.CommentRepository;
 import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.service.CommentService;
+import ru.ac.secondhand.utils.MethodLog;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -82,5 +81,27 @@ public class CommentServiceImpl implements CommentService {
         log.info("Comment [{}] for ad [{}] successfully updated", commentId, adId);
 
         return mapper.toCommentDTO(updateComment);
+    }
+
+    /**
+     * Проверка, что юзер является владельцем комментария,
+     * для предоставления ему право на удаление/обновление
+     *
+     * @param username - имя пользователя
+     * @param id - id комментария
+     */
+    public boolean isOwner(String username, Integer id) {
+        log.info("Method {}, user {}, comment {}", MethodLog.getMethodName(), username, id);
+
+        Comment comment = commentRepository.findById(id)
+            .orElseThrow(() -> {
+                 log.warn("Comment [{}] not found", id);
+                return new CommentNotFoundException(String.format("Comment [%d] not found ", id));
+            });
+        if (!comment.getUser().getUsername().equals(username)) {
+            log.warn("Trying to access foreign comment {} by user {}", id, username);
+            return false;
+        }
+        return true;
     }
 }

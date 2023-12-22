@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import ru.ac.secondhand.dto.comment.CommentDTO;
 import ru.ac.secondhand.dto.comment.Comments;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
-import ru.ac.secondhand.entity.Comment;
 import ru.ac.secondhand.service.CommentService;
 
 @RestController
@@ -80,6 +80,7 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден.")
     })
     @DeleteMapping("/{adId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ADMIN') or @commentServiceImpl.isOwner(authentication.name, #commentId)")
     public ResponseEntity<?> deleteComment(@PathVariable("adId") Integer adId,
                                            @PathVariable("commentId") Integer commentId) {
         commentService.delete(adId, commentId);
@@ -95,6 +96,7 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден.")
     })
     @PutMapping("/{adId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ADMIN') or @commentServiceImpl.isOwner(authentication.name, #commentId)")
     public ResponseEntity<?> updateComment(@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId,
                                            @RequestBody CreateOrUpdateComment commentRequest) {
         CommentDTO updateCommentDTO = commentService.updateComment(adId, commentId, commentRequest);
