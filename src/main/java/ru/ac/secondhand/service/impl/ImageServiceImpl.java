@@ -14,6 +14,7 @@ import ru.ac.secondhand.service.ImageService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -89,6 +90,12 @@ public class ImageServiceImpl implements ImageService {
         }
         log.info("Image deleted [{}]", imageId);
     }
+
+    @Override
+    public Optional<Image> getImage(Integer imageId) {
+        return imageRepository.findById(imageId);
+    }
+
 
     public String generateUniqueFilename(String originalFilename) {
         log.debug("Generated unique filename: {}", originalFilename);
