@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
 import ru.ac.secondhand.service.AdService;
+import ru.ac.secondhand.service.ImageService;
 
 @RestController
 @RequestMapping("ads")
@@ -42,6 +44,7 @@ import ru.ac.secondhand.service.AdService;
 public class AdsController {
 
     private final AdService adService;
+    private final ImageService imageService;
 
     @Operation(summary = "Получить список всех объявлений")
     @ApiResponse(
@@ -168,5 +171,16 @@ public class AdsController {
     public ResponseEntity<?> deleteAd(@PathVariable Integer id) {
         adService.deleteAd(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @GetMapping("/image/{id}")
+    public ResponseEntity<byte[]> getAdImage(@PathVariable Integer id) {
+        byte[] imageData = imageService.getImage(id);
+        if (imageData == null) {
+            return ResponseEntity.notFound().build();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
     }
 }
