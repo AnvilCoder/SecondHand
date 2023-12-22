@@ -6,6 +6,9 @@ import ru.ac.secondhand.entity.enums.Role;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+/**
+ * Принимаемые данные для регистрации нового пользователя
+ */
 @Data
 public class RegisterDTO {
 
