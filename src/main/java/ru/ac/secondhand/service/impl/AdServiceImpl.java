@@ -18,6 +18,7 @@ import ru.ac.secondhand.repository.AdRepository;
 import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.service.ImageService;
 import ru.ac.secondhand.service.UserService;
+import ru.ac.secondhand.utils.MethodLog;
 
 import java.util.List;
 
@@ -68,6 +69,7 @@ public class AdServiceImpl implements AdService {
     @Override
     @Transactional(readOnly = true)
     public Ads getAll() {
+        log.info("Method {}", MethodLog.getMethodName());
         List<Ad> ads = adRepository.findAll();
         return mapper.toAds(ads);
     }
@@ -93,6 +95,7 @@ public class AdServiceImpl implements AdService {
     @Override
     @Transactional(readOnly = true)
     public ExtendedAd getAdInfo(Integer id) {
+        log.info("Method {}", MethodLog.getMethodName());
         Ad ad = adRepository.findById(id).orElseThrow(() -> {
             log.warn(AD_NOT_FOUND_MSG, id);
             return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
@@ -120,6 +123,7 @@ public class AdServiceImpl implements AdService {
     @Override
     @Transactional(readOnly = true)
     public Ads getUsersAds() {
+        log.info("Method {}", MethodLog.getMethodName());
         User user = userService.findUser();
         List<Ad> ads = adRepository.findAdsByUserId(user.getId());
         return mapper.toAds(ads);
@@ -140,15 +144,41 @@ public class AdServiceImpl implements AdService {
      * @see AdMapper#toAdEntity(CreateOrUpdateAd)
      * @see AdMapper#toAdDTO(Ad)
      */
+//    @Override
+//    public AdDTO createAd(CreateOrUpdateAd adDTO) {
+//        log.info("Method {}", MethodLog.getMethodName());
+//        User user = userService.findUser();
+//        log.debug("User found");
+//        Ad ad = mapper.toAdEntity(adDTO);
+//        ad.setUser(user);
+//        adRepository.save(ad);
+//        log.info("Ad {} {} saved", ad.getId(), ad.getTitle());
+//        return mapper.toAdDTO(ad);
+//    }
+
     @Override
-    public AdDTO createAd(CreateOrUpdateAd adDTO) {
+    public AdDTO createAd(CreateOrUpdateAd adDTO, MultipartFile image) {
+        log.info("Method {}", MethodLog.getMethodName());
         User user = userService.findUser();
+        log.debug("User found");
+
+        // Создаем объявление
         Ad ad = mapper.toAdEntity(adDTO);
         ad.setUser(user);
+
+        // Сохраняем изображение
+        if (image != null && !image.isEmpty()) {
+            Image newImage = imageService.saveImage(image);
+            ad.setImage(newImage);
+            log.info("Image {} saved", newImage.getId());
+        }
+
+        // Сохраняем объявление
         adRepository.save(ad);
         log.info("Ad {} {} saved", ad.getId(), ad.getTitle());
         return mapper.toAdDTO(ad);
     }
+
 
     /**
      * Обновляет существующее объявление с заданным идентификатором.
@@ -165,6 +195,7 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public AdDTO updateAd(Integer id, CreateOrUpdateAd adDTO) {
+        log.info("Method {}", MethodLog.getMethodName());
         Ad ad = adRepository.findById(id).orElseThrow(() -> {
             log.warn(AD_NOT_FOUND_MSG, id);
             return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
@@ -195,7 +226,8 @@ public class AdServiceImpl implements AdService {
      * @see ImageService
      */
     @Override
-    public String updateAdImage(Integer id, MultipartFile image) {
+    public void updateAdImage(Integer id, MultipartFile image) {
+        log.info("Method {}", MethodLog.getMethodName());
         Ad ad = adRepository.findById(id).orElseThrow(() -> {
             log.warn(AD_NOT_FOUND_MSG, id);
             return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
@@ -203,13 +235,10 @@ public class AdServiceImpl implements AdService {
         if (ad.getImage() != null) {
             imageService.deleteImage(ad.getImage().getId());
         }
-
         Image newImage = imageService.saveImage(image);
-        Integer imageId = newImage.getId();
         ad.setImage(newImage);
         adRepository.save(ad);
-
-        return "/ads/image/" + imageId;
+        log.info("Image {} saved", newImage.getId());
     }
 
     /**

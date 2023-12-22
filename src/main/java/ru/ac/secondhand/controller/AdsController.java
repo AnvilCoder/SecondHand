@@ -1,5 +1,6 @@
 package ru.ac.secondhand.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +33,8 @@ import ru.ac.secondhand.dto.ad.ExtendedAd;
 import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.service.ImageService;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("ads")
 @RequiredArgsConstructor
@@ -45,6 +49,7 @@ public class AdsController {
 
     private final AdService adService;
     private final ImageService imageService;
+    private final ObjectMapper objectMapper;
 
     @Operation(summary = "Получить список всех объявлений")
     @ApiResponse(
@@ -88,7 +93,7 @@ public class AdsController {
                     array = @ArraySchema(schema = @Schema(implementation = Ads.class)))
     )
     @GetMapping("/me")
-    public ResponseEntity<?> getUsersAds() { // из контекста тащить
+    public ResponseEntity<?> getUsersAds() {
         Ads ads = adService.getUsersAds();
         return ResponseEntity.ok(ads);
     }
@@ -100,10 +105,35 @@ public class AdsController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = AdDTO.class))
     )
-    @PostMapping
-    public ResponseEntity<?> createAdd(@RequestBody CreateOrUpdateAd ad) {
-        AdDTO createdAd = adService.createAd(ad);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
+    // эту игнорирует
+
+//    @PostMapping
+//    public ResponseEntity<?> createAdd(@RequestBody CreateOrUpdateAd ad, @RequestParam MultipartFile file) {
+//        AdDTO createdAd = adService.createAd(ad, file);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
+//    }
+
+// эта хуйня работает, но она нуллы добавляет
+
+//    @PostMapping(consumes = {"multipart/form-data"})
+//    public ResponseEntity<?> createAd(@ModelAttribute CreateOrUpdateAd ad,
+//                                      @RequestParam(value = "image", required = false) MultipartFile image) {
+//        AdDTO createdAd = adService.createAd(ad, image);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
+//    }
+
+    // на эту пока надежды
+
+    @PostMapping(consumes = {"multipart/form-data"})
+    public ResponseEntity<?> createAd(@RequestParam("properties") String adStr,
+                                      @RequestParam(value = "image", required = false) MultipartFile image) {
+        try {
+            CreateOrUpdateAd adDTO = objectMapper.readValue(adStr, CreateOrUpdateAd.class);
+            AdDTO createdAd = adService.createAd(adDTO, image);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка обработки данных: " + e.getMessage());
+        }
     }
 
     @Operation(summary = "Изменить объявление")
@@ -148,8 +178,8 @@ public class AdsController {
     @PatchMapping("/{id}/image")
     public ResponseEntity<?> updateAdImage(@PathVariable("id") Integer id,
                                            @RequestParam("image") MultipartFile image) {
-        String imageURL = adService.updateAdImage(id, image); //TODO: написать нормальную загрузку
-        return ResponseEntity.ok(imageURL);
+        adService.updateAdImage(id, image);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "Удалить объявление")
