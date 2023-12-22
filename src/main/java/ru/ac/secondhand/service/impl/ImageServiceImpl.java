@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.entity.Image;
+import ru.ac.secondhand.exception.ImageNotFoundException;
 import ru.ac.secondhand.exception.ImageSaveException;
 import ru.ac.secondhand.exception.InvalidFileException;
 import ru.ac.secondhand.repository.ImageRepository;
@@ -13,6 +14,9 @@ import ru.ac.secondhand.service.ImageService;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -92,8 +96,23 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Optional<Image> getImage(Integer imageId) {
-        return imageRepository.findById(imageId);
+    public byte[] getImage(Integer imageId) {
+        Optional<Image> imageOpt = imageRepository.findById(imageId);
+        if (imageOpt.isPresent()) {
+            Image image = imageOpt.get();
+
+            String filePath = image.getImagePath();
+
+            Path path = Paths.get(filePath);
+
+            try {
+                return Files.readAllBytes(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new ImageNotFoundException("Not found images {}");
+        }
     }
 
 

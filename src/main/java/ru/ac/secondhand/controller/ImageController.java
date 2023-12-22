@@ -2,7 +2,9 @@ package ru.ac.secondhand.controller;
 
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,12 +43,12 @@ public class ImageController { //TODO добавил для теста, нужн
 
     @GetMapping("/{imageId}")
     public ResponseEntity<?> getImageById(@PathVariable Integer imageId) {
-        Optional<Image> image = imageService.getImage(imageId);
-        if (image.isPresent()) {
-            return ResponseEntity.ok(image.get());
-        } else {
-            return ResponseEntity.notFound().build();
+        byte[] image = imageService.getImage(imageId);
+        if (image != null) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            return new ResponseEntity<>(image, headers, HttpStatus.OK);
         }
+        return ResponseEntity.notFound().build();
     }
-
 }
