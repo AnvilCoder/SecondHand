@@ -10,5 +10,5 @@ public interface ImageService {
 
     void deleteImage(Integer imageId);
 
-    Optional<Image> getImage(Integer imagerId);
+    byte[] getImage(Integer imagerId);
 }
