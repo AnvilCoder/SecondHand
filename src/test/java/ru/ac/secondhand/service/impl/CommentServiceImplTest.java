@@ -21,7 +21,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -141,5 +143,31 @@ public class CommentServiceImplTest {
 
         assertThrows(CommentNotFoundException.class, () -> commentService.updateComment(adId, commentId, createOrUpdateComment));
         verify(commentRepository, never()).save(any(Comment.class));
+    }
+
+    @Test
+    public void testIsOwnerSuccess() {
+        Comment comment = TestUtils.createStandardComment();
+        comment.setUser(TestUtils.createStandardUser());
+
+        when(commentRepository.findById(TestUtils.COMMENT_ID)).thenReturn(Optional.of(comment));
+        assertTrue(commentService.isOwner(TestUtils.STANDARD_USERNAME, TestUtils.COMMENT_ID));
+    }
+
+    @Test
+    public void testIsOwnerCommentNotFound() {
+        when(commentRepository.findById(TestUtils.COMMENT_ID)).thenReturn(Optional.empty());
+        assertThrows(CommentNotFoundException.class, () -> {
+            commentService.isOwner(TestUtils.STANDARD_USERNAME, TestUtils.COMMENT_ID);
+        });
+    }
+
+    @Test
+    public void testIsOwnerNotOwner() {
+        Comment comment = TestUtils.createStandardComment();
+        comment.setUser(TestUtils.createStandardUser());
+
+        when(commentRepository.findById(TestUtils.COMMENT_ID)).thenReturn(Optional.of(comment));
+        assertFalse(commentService.isOwner(TestUtils.OTHER_USERNAME, TestUtils.COMMENT_ID));
     }
 }

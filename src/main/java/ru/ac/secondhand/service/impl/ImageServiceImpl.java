@@ -26,6 +26,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
 
+    final String LOG_ATTEMPT_MSG = "Attempting to save an image.";
+    final String LOG_INVALID_SIZE_MSG = "Invalid file size. Maximum allowed size is 3MB.";
+    final String LOG_INVALID_TYPE_MSG = "Invalid file type. Only JPEG and PNG are allowed.";
+    final String LOG_INVALID_NAME_MSG = "Invalid file name. It contains illegal characters.";
+    final String LOG_CREATED_DIRECTORY_MSG = "Created directory for file uploads: {}";
+    final String LOG_ERROR_CREATING_DIRECTORY_MSG = "Could not create the directory for file uploads.";
+    final String LOG_IMAGE_SAVED_MSG = "Image saved with path [{}]";
+    final String LOG_ERROR_SAVING_IMAGE_MSG = "Error saving image: {}";
+
     private final ImageRepository imageRepository;
     private static final long MAX_SIZE = 3 * 1024 * 1024;
 
@@ -38,33 +47,37 @@ public class ImageServiceImpl implements ImageService {
     @Override
     @Transactional
     public Image saveImage(MultipartFile imageFile) {
-        log.info("Attempting to save an image.");
+        log.info(LOG_ATTEMPT_MSG);
+
         if (!isValidSize(imageFile)) {
-            log.warn("Invalid file size. Maximum allowed size is 3MB.");
+            log.warn(LOG_INVALID_SIZE_MSG);
             throw new InvalidFileException("File size is invalid. Maximum allowed size is 3MB.");
         }
+
         if (!isValidType(imageFile)) {
-            log.warn("Invalid file type. Only JPEG and PNG are allowed.");
+            log.warn(LOG_INVALID_TYPE_MSG);
             throw new InvalidFileException("File type is invalid. Only JPEG and PNG are allowed.");
         }
-        if (!isValidName(Objects.requireNonNull(imageFile.getOriginalFilename()))) {
-            log.warn("Invalid file name. It contains illegal characters.");
+
+        String originalFilename = Objects.requireNonNull(imageFile.getOriginalFilename());
+        if (!isValidName(originalFilename)) {
+            log.warn(LOG_INVALID_NAME_MSG);
             throw new InvalidFileException("File name is invalid. It contains illegal characters.");
         }
 
         try {
             String directoryPath = System.getProperty("user.dir") + "/images/";
-            String filename = generateUniqueFilename(imageFile.getOriginalFilename());
+            String filename = generateUniqueFilename(originalFilename);
             String filePath = directoryPath + filename;
 
             File directory = new File(directoryPath);
             if (!directory.exists()) {
                 boolean isCreated = directory.mkdirs();
                 if (!isCreated) {
-                    log.error("Could not create the directory for file uploads.");
-                    throw new IOException("Could not create the directory for file uploads.");
+                    log.error(LOG_ERROR_CREATING_DIRECTORY_MSG);
+                    throw new IOException(LOG_ERROR_CREATING_DIRECTORY_MSG);
                 }
-                log.info("Created directory for file uploads: {}", directoryPath);
+                log.info(LOG_CREATED_DIRECTORY_MSG, directoryPath);
             }
 
             File file = new File(filePath);
@@ -74,10 +87,10 @@ public class ImageServiceImpl implements ImageService {
             image.setImagePath(filePath);
             image = imageRepository.save(image);
 
-            log.info("Image saved with path [{}]", filePath);
+            log.info(LOG_IMAGE_SAVED_MSG, filePath);
             return image;
         } catch (IOException e) {
-            log.error("Error saving image: {}", e.getMessage());
+            log.error(LOG_ERROR_SAVING_IMAGE_MSG, e.getMessage());
             throw new ImageSaveException("Failed to save image", e);
         }
     }
@@ -100,11 +113,8 @@ public class ImageServiceImpl implements ImageService {
         Optional<Image> imageOpt = imageRepository.findById(imageId);
         if (imageOpt.isPresent()) {
             Image image = imageOpt.get();
-
             String filePath = image.getImagePath();
-
             Path path = Paths.get(filePath);
-
             try {
                 return Files.readAllBytes(path);
             } catch (IOException e) {

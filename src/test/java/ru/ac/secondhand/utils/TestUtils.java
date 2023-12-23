@@ -24,6 +24,8 @@ import java.util.Random;
 
 public class TestUtils {
 
+    public static final String STANDARD_USERNAME = "testUser";
+    public static final String OTHER_USERNAME = "anotherUser";
     public static Integer AD_ID = 1;
     public static Integer USER_ID = 1;
     public static Integer IMAGE_ID = 1;
@@ -37,6 +39,35 @@ public class TestUtils {
     public static Integer AUTHOR_ID = 1;
     public static String AUTHOR_FIRST_NAME = "John";
     public static String AUTHOR_IMAGE = "/path/to/image.jpg";
+    public static final Integer MAX_SIZE = 3 * 1024 * 1024;
+    public static final String VALID_FILENAME = "valid_filename.jpg";
+    public static final String INVALID_FILENAME_1 = "../secret/config.txt";
+    public static final String INVALID_FILENAME_2 = "invalid<name>.txt";
+    public static final String INVALID_FILENAME_3 = "invalid>name>.txt";
+    public static final String INVALID_FILENAME_4 = "invalid\"name.txt";
+    public static final String FILE_CONTENT = "image data";
+    public static final String TEXT_FILE_TYPE = "text/plain";
+    public static final String JPEG_FILE_TYPE = "image/jpeg";
+    public static final String PNG_FILE_TYPE = "image/png";
+    public static final String GIF_FILE_TYPE = "image/gif";
+    public static final String FILE_VALID_SIZE = "File size within valid range should return true";
+    public static final String UUID_START_MSG = "Filename should start with a UUID.";
+    public static final String ORIGINAL_FILENAME_END_MSG = "Filename should end with the original filename.";
+    public static final String INVALID_FILE_SIZE_MSG = "File size above valid range should return false";
+    public static final String VALID_JPEG_TYPE_MSG = "JPEG file type should be valid";
+    public static final String VALID_PNG_TYPE_MSG = "PNG file type should be valid";
+    public static final String INVALID_GIF_TYPE_MSG = "GIF file type should be invalid";
+    public static final String VALID_FILENAME_TRUE_MSG = "Valid filename should return true";
+    public static final String MATCH_EXPECTED_DATA_MSG = "The retrieved image data should match the expected data.";
+    public static final String IMAGE_NOT_FOUND_EXCEPTION_MSG = "Should throw ImageNotFoundException when image does not exist.";
+    public static final String FILE_NAME = "filename.txt";
+    public static final String SAVED_IMAGE_NOT_NULL_MSG = "Saved image should not be null";
+    public static final String LARGE_IMAGE_SIZE_EXCEPTION_MSG = "Should throw InvalidFileException for large image size";
+    public static final String INVALID_IMAGE_TYPE_EXCEPTION_MSG = "Should throw InvalidFileException for invalid image type";
+    public static final String INVALID_IMAGE_NAME_EXCEPTION_MSG = "Should throw InvalidFileException for invalid image name";
+
+
+
 
     private static final byte[] BYTE_ARRAY;
 
@@ -175,5 +206,23 @@ public class TestUtils {
         List<Comment> comments = new ArrayList<>();
         comments.add(getCommentEntity());
         return comments;
+    }
+
+    public static User createStandardUser() {
+        User user = new User();
+        user.setUsername(STANDARD_USERNAME);
+        return user;
+    }
+
+    public static Ad createStandardAd() {
+        Ad ad = new Ad();
+        ad.setId(AD_ID);
+        return ad;
+    }
+
+    public static Comment createStandardComment() {
+        Comment comment = new Comment();
+        comment.setId(COMMENT_ID);
+        return comment;
     }
 }

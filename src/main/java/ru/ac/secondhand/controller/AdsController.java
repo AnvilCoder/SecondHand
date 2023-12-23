@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -154,6 +155,7 @@ public class AdsController {
             )
     })
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> updateAd(@PathVariable Integer id,
                                       @RequestBody CreateOrUpdateAd ad) {
         AdDTO updatedAd = adService.updateAd(id, ad);
@@ -176,6 +178,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("/{id}/image")
+    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> updateAdImage(@PathVariable("id") Integer id,
                                            @RequestParam("image") MultipartFile image) {
         adService.updateAdImage(id, image);
@@ -198,6 +201,7 @@ public class AdsController {
             )
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> deleteAd(@PathVariable Integer id) {
         adService.deleteAd(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
