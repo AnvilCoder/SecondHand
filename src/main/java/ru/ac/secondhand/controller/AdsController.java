@@ -1,6 +1,5 @@
 package ru.ac.secondhand.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -103,7 +102,7 @@ public class AdsController {
                     schema = @Schema(implementation = AdDTO.class))
     )
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createAd(@RequestPart(value = "properties", required = false) CreateOrUpdateAd properties,
+    public ResponseEntity<?> createAd(@RequestPart(value = "properties") CreateOrUpdateAd properties,
                                       @RequestPart("image") MultipartFile image) {
         AdDTO createdAd = adService.createAd(properties, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
