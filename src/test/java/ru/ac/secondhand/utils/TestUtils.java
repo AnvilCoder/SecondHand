@@ -219,4 +219,10 @@ public class TestUtils {
         ad.setId(AD_ID);
         return ad;
     }
+
+    public static Comment createStandardComment() {
+        Comment comment = new Comment();
+        comment.setId(COMMENT_ID);
+        return comment;
+    }
 }
