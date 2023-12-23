@@ -60,13 +60,11 @@ public class AdsController {
         return ResponseEntity.ok(ads);
     }
 
-    @Operation(summary = "Получить список всех пользователей",
-            description = "Доступ: ADMIN, MANAGER, SECURITY."
-    )
+    @Operation(summary = "Получить список всех пользователей")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "OK: возвращает список пользователей",
+                    description = "OK: возвращает инфо об объявлении",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ExtendedAd.class))
             ),
@@ -76,7 +74,7 @@ public class AdsController {
             )
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAdInfo(@PathVariable Integer id) {
+    public ResponseEntity<?> getAdInfo(@PathVariable("id") Integer id) {
         ExtendedAd ad = adService.getAdInfo(id);
         return ResponseEntity.ok(ad);
     }

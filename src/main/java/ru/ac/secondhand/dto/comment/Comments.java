@@ -10,5 +10,5 @@ import java.util.List;
 public class Comments {
 
     private Integer count;
-    private List<CommentDTO> comments;
+    private List<CommentDTO> results;
 }
