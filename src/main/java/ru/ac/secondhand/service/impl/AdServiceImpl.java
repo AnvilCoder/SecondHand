@@ -96,10 +96,7 @@ public class AdServiceImpl implements AdService {
     @Transactional(readOnly = true)
     public ExtendedAd getAdInfo(Integer id) {
         log.info("Method {}", MethodLog.getMethodName());
-        Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
-            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
-        });
+        Ad ad = getAdById(id);
         return mapper.toExtendedAd(ad);
     }
 
@@ -144,36 +141,21 @@ public class AdServiceImpl implements AdService {
      * @see AdMapper#toAdEntity(CreateOrUpdateAd)
      * @see AdMapper#toAdDTO(Ad)
      */
-//    @Override
-//    public AdDTO createAd(CreateOrUpdateAd adDTO) {
-//        log.info("Method {}", MethodLog.getMethodName());
-//        User user = userService.findUser();
-//        log.debug("User found");
-//        Ad ad = mapper.toAdEntity(adDTO);
-//        ad.setUser(user);
-//        adRepository.save(ad);
-//        log.info("Ad {} {} saved", ad.getId(), ad.getTitle());
-//        return mapper.toAdDTO(ad);
-//    }
-
     @Override
     public AdDTO createAd(CreateOrUpdateAd adDTO, MultipartFile image) {
         log.info("Method {}", MethodLog.getMethodName());
         User user = userService.findUser();
         log.debug("User found");
 
-        // Создаем объявление
         Ad ad = mapper.toAdEntity(adDTO);
         ad.setUser(user);
 
-        // Сохраняем изображение
         if (image != null && !image.isEmpty()) {
             Image newImage = imageService.saveImage(image);
             ad.setImage(newImage);
             log.info("Image {} saved", newImage.getId());
         }
 
-        // Сохраняем объявление
         adRepository.save(ad);
         log.info("Ad {} {} saved", ad.getId(), ad.getTitle());
         return mapper.toAdDTO(ad);
@@ -196,10 +178,7 @@ public class AdServiceImpl implements AdService {
     @Override
     public AdDTO updateAd(Integer id, CreateOrUpdateAd adDTO) {
         log.info("Method {}", MethodLog.getMethodName());
-        Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
-            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
-        });
+        Ad ad = getAdById(id);
         ad.setTitle(adDTO.getTitle());
         ad.setPrice(adDTO.getPrice());
         ad.setDescription(adDTO.getDescription());
@@ -222,16 +201,12 @@ public class AdServiceImpl implements AdService {
      *
      * @param id    Идентификатор объявления, изображение которого нужно обновить.
      * @param image Файл нового изображения.
-     * @return URL обновлённого изображения.
      * @see ImageService
      */
     @Override
     public void updateAdImage(Integer id, MultipartFile image) {
         log.info("Method {}", MethodLog.getMethodName());
-        Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
-            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
-        });
+        Ad ad = getAdById(id);
         if (ad.getImage() != null) {
             imageService.deleteImage(ad.getImage().getId());
         }
@@ -253,10 +228,7 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public void deleteAd(Integer id) {
-        Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
-            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
-        });
+        Ad ad = getAdById(id);
         log.info("Ad {} {} deleted", ad.getId(), ad.getTitle());
         adRepository.delete(ad);
     }
@@ -269,6 +241,7 @@ public class AdServiceImpl implements AdService {
      * @throws AdNotFoundException если объявление с указанным идентификатором не найдено.
      */
     @Override
+    @Transactional(readOnly = true)
     public Ad getAdById(Integer adId) {
         log.info("Fetching Ad with id: {}", adId);
         return adRepository.findById(adId).orElseThrow(() -> {
@@ -282,13 +255,13 @@ public class AdServiceImpl implements AdService {
      * для предоставления ему право на удаление/обновление
      *
      * @param username - имя пользователя
-     * @param id - id объявления
+     * @param id       - id объявления
      */
     public boolean isOwner(String username, Integer id) {
         log.info("Method {}, user {}, ad {}", MethodLog.getMethodName(), username, id);
 
         Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
+            log.warn("Ad with {} not found", id);
             return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
         });
         if (!ad.getUser().getUsername().equals(username)) {

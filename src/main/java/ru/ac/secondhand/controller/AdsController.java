@@ -1,5 +1,6 @@
 package ru.ac.secondhand.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -13,11 +14,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +32,6 @@ import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
 import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.service.ImageService;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("ads")
@@ -106,25 +103,6 @@ public class AdsController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = AdDTO.class))
     )
-    // эту игнорирует
-
-//    @PostMapping
-//    public ResponseEntity<?> createAdd(@RequestBody CreateOrUpdateAd ad, @RequestParam MultipartFile file) {
-//        AdDTO createdAd = adService.createAd(ad, file);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
-//    }
-
-// эта хуйня работает, но она нуллы добавляет
-
-//    @PostMapping(consumes = {"multipart/form-data"})
-//    public ResponseEntity<?> createAd(@ModelAttribute CreateOrUpdateAd ad,
-//                                      @RequestParam(value = "image", required = false) MultipartFile image) {
-//        AdDTO createdAd = adService.createAd(ad, image);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
-//    }
-
-    // на эту пока надежды
-
     @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<?> createAd(@RequestParam("properties") String adStr,
                                       @RequestParam(value = "image", required = false) MultipartFile image) {
@@ -132,7 +110,7 @@ public class AdsController {
             CreateOrUpdateAd adDTO = objectMapper.readValue(adStr, CreateOrUpdateAd.class);
             AdDTO createdAd = adService.createAd(adDTO, image);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
-        } catch (IOException e) {
+        } catch (JsonProcessingException e) { //TODO: add to GEH
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка обработки данных: " + e.getMessage());
         }
     }
@@ -155,7 +133,6 @@ public class AdsController {
             )
     })
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> updateAd(@PathVariable Integer id,
                                       @RequestBody CreateOrUpdateAd ad) {
         AdDTO updatedAd = adService.updateAd(id, ad);
@@ -178,7 +155,6 @@ public class AdsController {
                     )
             })
     @PatchMapping("/{id}/image")
-    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> updateAdImage(@PathVariable("id") Integer id,
                                            @RequestParam("image") MultipartFile image) {
         adService.updateAdImage(id, image);
@@ -201,7 +177,6 @@ public class AdsController {
             )
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> deleteAd(@PathVariable Integer id) {
         adService.deleteAd(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
