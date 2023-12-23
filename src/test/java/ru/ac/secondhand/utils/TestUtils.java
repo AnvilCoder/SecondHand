@@ -24,6 +24,8 @@ import java.util.Random;
 
 public class TestUtils {
 
+    public static final String STANDARD_USERNAME = "testUser";
+    public static final String OTHER_USERNAME = "anotherUser";
     public static Integer AD_ID = 1;
     public static Integer USER_ID = 1;
     public static Integer IMAGE_ID = 1;
@@ -204,5 +206,17 @@ public class TestUtils {
         List<Comment> comments = new ArrayList<>();
         comments.add(getCommentEntity());
         return comments;
+    }
+
+    public static User createStandardUser() {
+        User user = new User();
+        user.setUsername(STANDARD_USERNAME);
+        return user;
+    }
+
+    public static Ad createStandardAd() {
+        Ad ad = new Ad();
+        ad.setId(AD_ID);
+        return ad;
     }
 }

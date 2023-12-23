@@ -1,11 +1,13 @@
 package ru.ac.secondhand.service.impl;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.dto.ad.AdDTO;
@@ -28,7 +30,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -271,5 +275,31 @@ class AdServiceImplTest {
 
         assertThrows(AdNotFoundException.class, () -> adService.getAdById(adId));
         verify(adRepository).findById(adId);
+    }
+
+    @Test
+    public void testIsOwnerSuccess() {
+        Ad ad = TestUtils.createStandardAd();
+        ad.setUser(TestUtils.createStandardUser());
+
+        when(adRepository.findById(TestUtils.AD_ID)).thenReturn(Optional.of(ad));
+        assertTrue(adService.isOwner(TestUtils.STANDARD_USERNAME, TestUtils.AD_ID));
+    }
+
+    @Test
+    public void testIsOwnerAdNotFound() {
+        when(adRepository.findById(TestUtils.AD_ID)).thenReturn(Optional.empty());
+        assertThrows(AdNotFoundException.class, () -> {
+            adService.isOwner(TestUtils.STANDARD_USERNAME, TestUtils.AD_ID);
+        });
+    }
+
+    @Test
+    public void testIsOwnerNotOwner() {
+        Ad ad = TestUtils.createStandardAd();
+        ad.setUser(TestUtils.createStandardUser());
+
+        when(adRepository.findById(TestUtils.AD_ID)).thenReturn(Optional.of(ad));
+        assertFalse(adService.isOwner(TestUtils.OTHER_USERNAME, TestUtils.AD_ID));
     }
 }
