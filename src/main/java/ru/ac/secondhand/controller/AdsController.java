@@ -1,6 +1,5 @@
 package ru.ac.secondhand.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.dto.ad.AdDTO;
@@ -47,7 +47,6 @@ public class AdsController {
 
     private final AdService adService;
     private final ImageService imageService;
-    private final ObjectMapper objectMapper;
 
     @Operation(summary = "Получить список всех объявлений")
     @ApiResponse(
@@ -103,17 +102,13 @@ public class AdsController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = AdDTO.class))
     )
-    @PostMapping(consumes = {"multipart/form-data"})
-    public ResponseEntity<?> createAd(@RequestParam("properties") String adStr,
-                                      @RequestParam(value = "image", required = false) MultipartFile image) {
-        try {
-            CreateOrUpdateAd adDTO = objectMapper.readValue(adStr, CreateOrUpdateAd.class);
-            AdDTO createdAd = adService.createAd(adDTO, image);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
-        } catch (JsonProcessingException e) { //TODO: add to GEH
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Ошибка обработки данных: " + e.getMessage());
-        }
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> createAd(@RequestPart(value = "properties", required = false) CreateOrUpdateAd properties,
+                                      @RequestPart("image") MultipartFile image) {
+        AdDTO createdAd = adService.createAd(properties, image);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
     }
+
 
     @Operation(summary = "Изменить объявление")
     @ApiResponses(value = {
