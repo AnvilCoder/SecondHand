@@ -53,8 +53,6 @@ public class CommentServiceImplTest {
     Authentication authentication;
     @Mock
     SecurityContext securityContext;
-    @Mock
-    private UserRepository userRepository;
     @InjectMocks
     CommentServiceImpl commentService;
 

@@ -67,8 +67,6 @@ public class TestUtils {
     public static final String INVALID_IMAGE_NAME_EXCEPTION_MSG = "Should throw InvalidFileException for invalid image name";
 
 
-
-
     private static final byte[] BYTE_ARRAY;
 
     static {
@@ -128,14 +126,14 @@ public class TestUtils {
 
     public static User getUserEntity() {
         return User.builder().
-        id(USER_ID).
-        username("username@gmail.com").
-        password("password").
-        firstName("first").
-        lastName("last").
-        phone("79998886655").
-        role(Role.USER).
-        image(getImage()).build();
+                id(USER_ID).
+                username("username@gmail.com").
+                password("password").
+                firstName("first").
+                lastName("last").
+                phone("79998886655").
+                role(Role.USER).
+                image(getImage()).build();
     }
 
     public static RegisterDTO getRegisterDTO() {
@@ -225,4 +223,22 @@ public class TestUtils {
         comment.setId(COMMENT_ID);
         return comment;
     }
+
+    public static Comment createCastomComment() {
+        Comment comment = new Comment();
+        comment.setId(COMMENT_ID);
+        comment.setCreatedAt(LocalDateTime.now());
+
+        User user = new User();
+        user.setId(USER_ID);
+        user.setFirstName("John Doe");
+
+        Image image = new Image();
+        image.setId(IMAGE_ID);
+        user.setImage(image);
+
+        comment.setUser(user);
+        return comment;
+    }
+
 }
