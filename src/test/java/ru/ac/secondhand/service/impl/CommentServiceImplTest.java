@@ -1,11 +1,19 @@
 package ru.ac.secondhand.service.impl;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.test.web.servlet.MockMvc;
 import ru.ac.secondhand.dto.comment.CommentDTO;
 import ru.ac.secondhand.dto.comment.Comments;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
@@ -14,9 +22,12 @@ import ru.ac.secondhand.entity.Comment;
 import ru.ac.secondhand.exception.CommentNotFoundException;
 import ru.ac.secondhand.mapper.CommentMapper;
 import ru.ac.secondhand.repository.CommentRepository;
+import ru.ac.secondhand.repository.UserRepository;
 import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.utils.TestUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,9 +49,15 @@ public class CommentServiceImplTest {
     AdService adService;
     @Mock
     CommentMapper mapper;
-
+    @Mock
+    Authentication authentication;
+    @Mock
+    SecurityContext securityContext;
+    @Mock
+    private UserRepository userRepository;
     @InjectMocks
     CommentServiceImpl commentService;
+
     private Integer adId;
     private Integer commentId;
     private Comment deletedComment;
@@ -55,8 +72,25 @@ public class CommentServiceImplTest {
         deletedComment = TestUtils.getCommentEntity();
         createOrUpdateComment = TestUtils.getCreateOrUpdateComment();
         ad = TestUtils.getAdEntity();
-
     }
+
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private void setUpAuthentication() {
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(authentication.isAuthenticated()).thenReturn(true);
+        UserDetails userDetails = new User(
+                "USER",
+                "666999666",
+                Collections.singletonList(new SimpleGrantedAuthority("USER"))
+        );
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+    }
+
 
     @Test
     void getComments_Success() {
@@ -79,11 +113,14 @@ public class CommentServiceImplTest {
 
     @Test
     void createdComment_Success() {
+       setUpAuthentication();
+
         Comment newComment = TestUtils.getCommentEntity();
         CommentDTO expectedCommentDTO = TestUtils.getCommentDTO();
 
         when(adService.getAdById(adId)).thenReturn(ad);
         when(mapper.toComment(createOrUpdateComment)).thenReturn(newComment);
+
         when(commentRepository.save(any(Comment.class))).thenReturn(newComment);
         when(mapper.toCommentDTO(any(Comment.class))).thenReturn(expectedCommentDTO);
 
@@ -138,7 +175,7 @@ public class CommentServiceImplTest {
 
     @Test
     void updateComment_NotFound_ThrowsException() {
-          when(adService.getAdById(adId)).thenReturn(TestUtils.getAdEntity());
+        when(adService.getAdById(adId)).thenReturn(TestUtils.getAdEntity());
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () -> commentService.updateComment(adId, commentId, createOrUpdateComment));
