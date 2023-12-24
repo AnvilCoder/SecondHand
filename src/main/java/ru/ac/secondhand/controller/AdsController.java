@@ -122,7 +122,7 @@ public class AdsController {
                     description = "NOT_FOUND: объявление не найдено"
             )
     })
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> updateAd(@PathVariable Integer id,
                                       @RequestBody CreateOrUpdateAd ad) {

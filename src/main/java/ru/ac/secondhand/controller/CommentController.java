@@ -14,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -95,7 +96,7 @@ public class CommentController {
             @ApiResponse(responseCode = "403", description = "Нехватает прав для этой команды."),
             @ApiResponse(responseCode = "404", description = "Комментарий не найден.")
     })
-    @PutMapping("/{adId}/comments/{commentId}")
+    @PatchMapping("/{adId}/comments/{commentId}")
     @PreAuthorize("hasRole('ADMIN') or @commentServiceImpl.isOwner(authentication.name, #commentId)")
     public ResponseEntity<?> updateComment(@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId,
                                            @RequestBody CreateOrUpdateComment commentRequest) {
