@@ -2,6 +2,8 @@ package ru.ac.secondhand.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ac.secondhand.dto.comment.CommentDTO;
@@ -9,13 +11,16 @@ import ru.ac.secondhand.dto.comment.Comments;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
 import ru.ac.secondhand.entity.Ad;
 import ru.ac.secondhand.entity.Comment;
+import ru.ac.secondhand.entity.User;
 import ru.ac.secondhand.exception.CommentNotFoundException;
 import ru.ac.secondhand.mapper.CommentMapper;
 import ru.ac.secondhand.repository.CommentRepository;
+import ru.ac.secondhand.repository.UserRepository;
 import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.service.CommentService;
 import ru.ac.secondhand.utils.MethodLog;
 
+import javax.swing.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,6 +33,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final AdService adService;
     private final CommentMapper mapper;
+    private final UserRepository userRepository;
 
 
     @Override
@@ -39,14 +45,20 @@ public class CommentServiceImpl implements CommentService {
         return mapper.toComments(comments);
     }
 
+    public User getCurrentAuthenticatedUser() {
+        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
     @Override
     public CommentDTO createComment(CreateOrUpdateComment comment, Integer adId) {
         log.info("Attempting to create a new comment for Ad [{}]", adId);
         Ad ad = adService.getAdById(adId);
+        User currentUser = getCurrentAuthenticatedUser();
 
         Comment newComment = mapper.toComment(comment);
         newComment.setAd(ad);
-        newComment.setUser(ad.getUser());
+        newComment.setUser(currentUser);
         newComment.setCreatedAt(LocalDateTime.now());
 
         Comment saveComment = commentRepository.save(newComment);
