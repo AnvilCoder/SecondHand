@@ -39,7 +39,7 @@ public class ImageController { //TODO добавил для теста, нужн
         imageService.deleteImage(id);
     }
 
-    @GetMapping("/{imageId}")
+    @GetMapping(value = "/{imageId}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE, "image/*"})
     public ResponseEntity<?> getImageById(@PathVariable Integer imageId) {
         byte[] image = imageService.getImage(imageId);
         if (image != null) {
