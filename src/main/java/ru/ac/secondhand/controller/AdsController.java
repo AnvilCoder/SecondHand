@@ -8,17 +8,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +29,6 @@ import ru.ac.secondhand.dto.ad.Ads;
 import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
 import ru.ac.secondhand.service.AdService;
-import ru.ac.secondhand.service.ImageService;
 
 @RestController
 @RequestMapping("ads")
@@ -45,7 +43,6 @@ import ru.ac.secondhand.service.ImageService;
 public class AdsController {
 
     private final AdService adService;
-    private final ImageService imageService;
 
     @Operation(summary = "Получить список всех объявлений")
     @ApiResponse(
@@ -124,7 +121,8 @@ public class AdsController {
                     description = "NOT_FOUND: объявление не найдено"
             )
     })
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> updateAd(@PathVariable Integer id,
                                       @RequestBody CreateOrUpdateAd ad) {
         AdDTO updatedAd = adService.updateAd(id, ad);
@@ -147,6 +145,7 @@ public class AdsController {
                     )
             })
     @PatchMapping("/{id}/image")
+    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> updateAdImage(@PathVariable("id") Integer id,
                                            @RequestParam("image") MultipartFile image) {
         adService.updateAdImage(id, image);
@@ -169,19 +168,9 @@ public class AdsController {
             )
     })
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> deleteAd(@PathVariable Integer id) {
         adService.deleteAd(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    @GetMapping("/image/{id}")
-    public ResponseEntity<byte[]> getAdImage(@PathVariable Integer id) {
-        byte[] imageData = imageService.getImage(id);
-        if (imageData == null) {
-            return ResponseEntity.notFound().build();
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG);
-        return new ResponseEntity<>(imageData, headers, HttpStatus.OK);
     }
 }
