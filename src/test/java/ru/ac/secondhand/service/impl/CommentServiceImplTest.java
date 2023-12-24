@@ -63,7 +63,7 @@ public class CommentServiceImplTest {
         List<Comment> commentsList = TestUtils.getCommentList();
         Comments expectedComments = new Comments();
         expectedComments.setCount(commentsList.size());
-        expectedComments.setComments(TestUtils.getCommentDTOList());
+        expectedComments.setResults(TestUtils.getCommentDTOList());
 
         when(adService.getAdById(adId)).thenReturn(TestUtils.getAdEntity());
         when(commentRepository.findByAdId(adId)).thenReturn(commentsList);
