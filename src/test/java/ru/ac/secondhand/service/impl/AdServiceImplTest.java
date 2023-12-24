@@ -33,6 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -101,7 +103,7 @@ class AdServiceImplTest {
         Assertions.assertThatThrownBy(
                         () -> adService.getAdInfo(adId))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining(String.format("Ad with [id=%s] not found", adId));
+                .hasMessageContaining(String.format("Ad not found for id: " + adId));
     }
 
     @Test
@@ -144,15 +146,20 @@ class AdServiceImplTest {
         Ad ad = TestUtils.getAdEntity();
         User user = TestUtils.getUserEntity();
         Integer userId = user.getId();
+        MultipartFile mockImage = mock(MultipartFile.class);
 
         when(userService.findUser()).thenReturn(user);
         when(mapper.toAdEntity(createOrUpdateAd)).thenReturn(ad);
         when(mapper.toAdDTO(ad)).thenReturn(TestUtils.getAdDTO());
+        when(mockImage.isEmpty()).thenReturn(false);
+        when(imageService.saveImage(any(MultipartFile.class))).thenReturn(new Image());
 
-//        AdDTO result = adService.createAd(createOrUpdateAd);
-//        Assertions.assertThat(result).hasNoNullFieldsOrProperties();
-//        Assertions.assertThat(result.getAuthor()).isEqualTo(userId);
-//        verify(adRepository).save(ad);
+        AdDTO result = adService.createAd(createOrUpdateAd, mockImage);
+
+        Assertions.assertThat(result).hasNoNullFieldsOrProperties();
+        Assertions.assertThat(result.getAuthor()).isEqualTo(userId);
+        verify(adRepository).save(ad);
+        verify(imageService).saveImage(mockImage);
     }
 
     @Test
@@ -179,11 +186,11 @@ class AdServiceImplTest {
         Assertions.assertThatThrownBy(
                         () -> adService.updateAd(adId, TestUtils.getCreateOrUpdateAd()))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining(String.format("Ad with [id=%s] not found", adId));
+                .hasMessageContaining(String.format("Ad not found for id: " + adId));
     }
 
     @Test
-    void updateAdImageShouldReturnImagePath() {
+    void updateAdImageShouldUpdateAdWithNewImage() {
         Ad adWithImage = TestUtils.getAdEntity();
         Integer adId = adWithImage.getId();
         MultipartFile image = TestUtils.getMultipartFile();
@@ -191,15 +198,13 @@ class AdServiceImplTest {
 
         when(adRepository.findById(adId)).thenReturn(Optional.of(adWithImage));
         when(imageService.saveImage(image)).thenReturn(newImage);
-        if (adWithImage.getImage() != null) {
-            Mockito.doNothing().when(imageService).deleteImage(adWithImage.getImage().getId());
-        }
 
-//        String result = adService.updateAdImage(adId, image);
+        adService.updateAdImage(adId, image);
 
-//        Assertions.assertThat(result).isEqualTo("/ads/image/" + newImage.getId());
+        Assertions.assertThat(adWithImage.getImage()).isEqualTo(newImage);
         verify(adRepository).save(adWithImage);
         verify(imageService).saveImage(image);
+
         if (adWithImage.getImage() != null) {
             verify(imageService).deleteImage(adWithImage.getImage().getId());
         }
@@ -215,7 +220,7 @@ class AdServiceImplTest {
         Assertions.assertThatThrownBy(
                         () -> adService.updateAdImage(adId, image))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining(String.format("Ad with [id=%s] not found", adId));
+                .hasMessageContaining(String.format("Ad not found for id: " + adId));
 
     }
 
@@ -253,7 +258,7 @@ class AdServiceImplTest {
 
         Assertions.assertThatThrownBy(() -> adService.deleteAd(adId))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining(String.format("Ad with [id=%s] not found", adId));
+                .hasMessageContaining(String.format("Ad not found for id: " + adId));
     }
 
     @Test
