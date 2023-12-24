@@ -51,8 +51,6 @@ public class AdServiceImpl implements AdService {
     private final AdMapper mapper;
     private final ImageService imageService;
 
-    private static final String AD_NOT_FOUND_MSG = "Ad with [id=%d] not found";
-
     /**
      * Получает список всех объявлений из репозитория.
      * <p>
@@ -260,10 +258,7 @@ public class AdServiceImpl implements AdService {
     public boolean isOwner(String username, Integer id) {
         log.info("Method {}, user {}, ad {}", MethodLog.getMethodName(), username, id);
 
-        Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn("Ad with {} not found", id);
-            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
-        });
+        Ad ad = getAdById(id);
         if (!ad.getUser().getUsername().equals(username)) {
             log.warn("Trying to access foreign ad {} by user {}", id, username);
             return false;
