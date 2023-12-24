@@ -17,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.entity.Image;
 import ru.ac.secondhand.service.ImageService;
 
-import java.util.Optional;
-
 @AllArgsConstructor
 @RestController
 @RequestMapping("/images")
