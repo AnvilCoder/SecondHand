@@ -87,7 +87,7 @@ public class AdsController {
                     array = @ArraySchema(schema = @Schema(implementation = Ads.class)))
     )
     @GetMapping("/me")
-    public ResponseEntity<?> getUsersAds() { // из контекста тащить
+    public ResponseEntity<?> getUsersAds() {
         Ads ads = adService.getUsersAds();
         return ResponseEntity.ok(ads);
     }
