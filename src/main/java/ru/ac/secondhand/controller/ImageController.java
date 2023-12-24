@@ -19,7 +19,7 @@ import ru.ac.secondhand.service.ImageService;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/images")
+@RequestMapping("/image")
 public class ImageController { //TODO добавил для теста, нужно будет удалить потом.
 
     private final ImageService imageService;
@@ -39,9 +39,9 @@ public class ImageController { //TODO добавил для теста, нужн
         imageService.deleteImage(id);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getImageById(@PathVariable Integer id) {
-        byte[] image = imageService.getImage(id);
+    @GetMapping(value = "/{imageId}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE, "image/*"})
+    public ResponseEntity<?> getImageById(@PathVariable Integer imageId) {
+        byte[] image = imageService.getImage(imageId);
         if (image != null) {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);

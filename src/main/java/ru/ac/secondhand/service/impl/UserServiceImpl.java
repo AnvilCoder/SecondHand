@@ -1,6 +1,5 @@
 package ru.ac.secondhand.service.impl;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -24,7 +23,7 @@ import ru.ac.secondhand.utils.MethodLog;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@NoArgsConstructor(force = true)
+//@NoArgsConstructor(force = true) Димка чини
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
@@ -43,6 +42,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Изменение пароля пользователя
+     *
      * @param newPassword
      */
     @Override
@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Получение данных пользователя
+     *
      * @return UserDTO
      */
     @Override
@@ -75,6 +76,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Обновление данных пользователя - имени, отчества и номера телефона
+     *
      * @param updateUserDTO
      * @return UpdateUserDTO
      */
@@ -91,6 +93,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Обновление аватара пользователя
+     *
      * @param image
      */
     @Override
