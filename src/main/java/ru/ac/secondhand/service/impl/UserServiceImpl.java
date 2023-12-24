@@ -1,5 +1,6 @@
 package ru.ac.secondhand.service.impl;
 
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ import ru.ac.secondhand.utils.MethodLog;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@NoArgsConstructor(force = true)
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
