@@ -18,7 +18,7 @@ public interface UserMapper {
     User registerDTOToUser(RegisterDTO registerDTO);
 
     @Mapping(target = "email", source = "user.username")
-    @Mapping(target = "image", expression = "java(user.getImage() != null ? \"/users/image/\" + user.getImage().getId() : null)")
+    @Mapping(target = "image", expression = "java(user.getImage() != null ? \"/images/\" + user.getImage().getId() : null)")
     UserDTO toUserDTO(User user);
 
     @Mapping(target = "id", ignore = true)
