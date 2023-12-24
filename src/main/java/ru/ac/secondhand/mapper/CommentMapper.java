@@ -21,7 +21,7 @@ public interface CommentMapper {
                 .map(this::toCommentDTO)
                 .collect(Collectors.toList());
         Comments commentsDTO = new Comments();
-        commentsDTO.setComments(commentDTOS);
+        commentsDTO.setResults(commentDTOS);
         commentsDTO.setCount(commentDTOS.size());
         return commentsDTO;
     }
