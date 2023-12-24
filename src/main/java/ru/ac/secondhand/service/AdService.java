@@ -15,11 +15,11 @@ public interface AdService {
 
     Ads getUsersAds();
 
-    AdDTO createAd(CreateOrUpdateAd ad);
+    AdDTO createAd(CreateOrUpdateAd ad, MultipartFile image);
 
     AdDTO updateAd(Integer id, CreateOrUpdateAd ad);
 
-    String updateAdImage(Integer id, MultipartFile image);
+    void updateAdImage(Integer id, MultipartFile image);
 
     void deleteAd(Integer id);
 

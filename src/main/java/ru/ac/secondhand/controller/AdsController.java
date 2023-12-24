@@ -12,7 +12,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.dto.ad.AdDTO;
@@ -89,7 +89,7 @@ public class AdsController {
                     array = @ArraySchema(schema = @Schema(implementation = Ads.class)))
     )
     @GetMapping("/me")
-    public ResponseEntity<?> getUsersAds() { // из контекста тащить
+    public ResponseEntity<?> getUsersAds() {
         Ads ads = adService.getUsersAds();
         return ResponseEntity.ok(ads);
     }
@@ -101,11 +101,13 @@ public class AdsController {
             content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = AdDTO.class))
     )
-    @PostMapping
-    public ResponseEntity<?> createAdd(@RequestBody CreateOrUpdateAd ad) {
-        AdDTO createdAd = adService.createAd(ad);
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> createAd(@RequestPart(value = "properties") CreateOrUpdateAd properties,
+                                      @RequestPart("image") MultipartFile image) {
+        AdDTO createdAd = adService.createAd(properties, image);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);
     }
+
 
     @Operation(summary = "Изменить объявление")
     @ApiResponses(value = {
@@ -125,7 +127,6 @@ public class AdsController {
             )
     })
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> updateAd(@PathVariable Integer id,
                                       @RequestBody CreateOrUpdateAd ad) {
         AdDTO updatedAd = adService.updateAd(id, ad);
@@ -148,11 +149,10 @@ public class AdsController {
                     )
             })
     @PatchMapping("/{id}/image")
-    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> updateAdImage(@PathVariable("id") Integer id,
                                            @RequestParam("image") MultipartFile image) {
-        String imageURL = adService.updateAdImage(id, image); //TODO: написать нормальную загрузку
-        return ResponseEntity.ok(imageURL);
+        adService.updateAdImage(id, image);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Operation(summary = "Удалить объявление")
@@ -171,7 +171,6 @@ public class AdsController {
             )
     })
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN') or @adServiceImpl.isOwner(authentication.name, #id)")
     public ResponseEntity<?> deleteAd(@PathVariable Integer id) {
         adService.deleteAd(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
