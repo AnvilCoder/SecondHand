@@ -17,8 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.entity.Image;
 import ru.ac.secondhand.service.ImageService;
 
-import java.util.Optional;
-
 @AllArgsConstructor
 @RestController
 @RequestMapping("/images")
@@ -41,9 +39,9 @@ public class ImageController { //TODO добавил для теста, нужн
         imageService.deleteImage(id);
     }
 
-    @GetMapping("/{imageId}")
-    public ResponseEntity<?> getImageById(@PathVariable Integer imageId) {
-        byte[] image = imageService.getImage(imageId);
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getImageById(@PathVariable Integer id) {
+        byte[] image = imageService.getImage(id);
         if (image != null) {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);
