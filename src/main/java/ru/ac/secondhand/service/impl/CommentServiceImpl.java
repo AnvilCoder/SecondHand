@@ -2,6 +2,7 @@ package ru.ac.secondhand.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import ru.ac.secondhand.entity.Ad;
 import ru.ac.secondhand.entity.Comment;
 import ru.ac.secondhand.entity.User;
 import ru.ac.secondhand.exception.CommentNotFoundException;
+import ru.ac.secondhand.exception.UnauthorizedAccessException;
 import ru.ac.secondhand.mapper.CommentMapper;
 import ru.ac.secondhand.repository.CommentRepository;
 import ru.ac.secondhand.repository.UserRepository;
@@ -20,7 +22,6 @@ import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.service.CommentService;
 import ru.ac.secondhand.utils.MethodLog;
 
-import javax.swing.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,9 +47,15 @@ public class CommentServiceImpl implements CommentService {
     }
 
     public User getCurrentAuthenticatedUser() {
-        String username = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
-        return userRepository.findByUsername(username).orElse(null);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = ((UserDetails) authentication.getPrincipal()).getUsername();
+            return userRepository.findByUsername(username).orElse(null);
+        } else {
+            throw new UnauthorizedAccessException("Пользователь не аутентифицирован");
+        }
     }
+
 
     @Override
     public CommentDTO createComment(CreateOrUpdateComment comment, Integer adId) {
@@ -100,16 +107,16 @@ public class CommentServiceImpl implements CommentService {
      * для предоставления ему право на удаление/обновление
      *
      * @param username - имя пользователя
-     * @param id - id комментария
+     * @param id       - id комментария
      */
     public boolean isOwner(String username, Integer id) {
         log.info("Method {}, user {}, comment {}", MethodLog.getMethodName(), username, id);
 
         Comment comment = commentRepository.findById(id)
-            .orElseThrow(() -> {
-                 log.warn("Comment [{}] not found", id);
-                return new CommentNotFoundException(String.format("Comment [%d] not found ", id));
-            });
+                .orElseThrow(() -> {
+                    log.warn("Comment [{}] not found", id);
+                    return new CommentNotFoundException(String.format("Comment [%d] not found ", id));
+                });
         if (!comment.getUser().getUsername().equals(username)) {
             log.warn("Trying to access foreign comment {} by user {}", id, username);
             return false;

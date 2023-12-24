@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final ImageService imageService;
     private final PasswordEncoder encoder;
 
+
     @Override
     public User findUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

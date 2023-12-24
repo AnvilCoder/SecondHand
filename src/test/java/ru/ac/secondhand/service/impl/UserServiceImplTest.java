@@ -51,14 +51,12 @@ class UserServiceImplTest {
     private PasswordEncoder encoder;
     @Captor
     private ArgumentCaptor<User> userCaptor;
-    @Spy
-    private UserServiceImpl userServiceSpy;
     @InjectMocks
     private UserServiceImpl userService;
 
     @BeforeEach
     void setUp() {
-        userServiceSpy = Mockito.spy(userService);
+        userService = Mockito.spy(userService);
 
         // Мокирование SecurityContext
         Authentication authentication = Mockito.mock(Authentication.class);
@@ -159,13 +157,13 @@ class UserServiceImplTest {
         mockUser.setId(1);
 
         // Мокирование метода findUser
-        Mockito.doReturn(mockUser).when(userServiceSpy).findUser();
+        Mockito.doReturn(mockUser).when(userService).findUser();
 
         // Вызов метода
-        UpdateUserDTO result = userServiceSpy.updateUser(updateUserDTO);
+        UpdateUserDTO result = userService.updateUser(updateUserDTO);
 
         // Проверки
-        verify(userServiceSpy).findUser();
+        verify(userService).findUser();
         verify(userMapper).updateUserDTOToUser(updateUserDTO, mockUser);
         verify(userRepository).save(mockUser);
         assertEquals(updateUserDTO, result);
