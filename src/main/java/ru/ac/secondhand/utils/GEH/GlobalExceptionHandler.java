@@ -1,6 +1,7 @@
 package ru.ac.secondhand.utils.GEH;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,8 +16,12 @@ import java.io.IOException;
 public class GlobalExceptionHandler {
 
     private ResponseEntity<Object> buildResponseEntity(ApiMessageError apiMessageError) {
-        return new ResponseEntity<>(apiMessageError, apiMessageError.getStatus());
+        return ResponseEntity.status(apiMessageError.getStatus())
+                .contentType(MediaType.APPLICATION_JSON) // Указываем, что ответ должен быть в формате JSON
+                .body(apiMessageError);
     }
+
+
 
     @ExceptionHandler(AdNotFoundException.class)
     public ResponseEntity<Object> handleAdNotFoundException(AdNotFoundException e) {

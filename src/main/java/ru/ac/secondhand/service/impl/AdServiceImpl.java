@@ -69,6 +69,7 @@ public class AdServiceImpl implements AdService {
     @Override
     @Transactional(readOnly = true)
     public Ads getAll() {
+        log.info("Method {}", MethodLog.getMethodName());
         List<Ad> ads = adRepository.findAll();
         return mapper.toAds(ads);
     }
@@ -94,10 +95,8 @@ public class AdServiceImpl implements AdService {
     @Override
     @Transactional(readOnly = true)
     public ExtendedAd getAdInfo(Integer id) {
-        Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
-            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
-        });
+        log.info("Method {}", MethodLog.getMethodName());
+        Ad ad = getAdById(id);
         return mapper.toExtendedAd(ad);
     }
 
@@ -121,6 +120,7 @@ public class AdServiceImpl implements AdService {
     @Override
     @Transactional(readOnly = true)
     public Ads getUsersAds() {
+        log.info("Method {}", MethodLog.getMethodName());
         User user = userService.findUser();
         List<Ad> ads = adRepository.findAdsByUserId(user.getId());
         return mapper.toAds(ads);
@@ -142,14 +142,25 @@ public class AdServiceImpl implements AdService {
      * @see AdMapper#toAdDTO(Ad)
      */
     @Override
-    public AdDTO createAd(CreateOrUpdateAd adDTO) {
+    public AdDTO createAd(CreateOrUpdateAd adDTO, MultipartFile image) {
+        log.info("Method {}", MethodLog.getMethodName());
         User user = userService.findUser();
+        log.debug("User found");
+
         Ad ad = mapper.toAdEntity(adDTO);
         ad.setUser(user);
+
+        if (image != null && !image.isEmpty()) {
+            Image newImage = imageService.saveImage(image);
+            ad.setImage(newImage);
+            log.info("Image {} saved", newImage.getId());
+        }
+
         adRepository.save(ad);
         log.info("Ad {} {} saved", ad.getId(), ad.getTitle());
         return mapper.toAdDTO(ad);
     }
+
 
     /**
      * Обновляет существующее объявление с заданным идентификатором.
@@ -166,10 +177,8 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public AdDTO updateAd(Integer id, CreateOrUpdateAd adDTO) {
-        Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
-            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
-        });
+        log.info("Method {}", MethodLog.getMethodName());
+        Ad ad = getAdById(id);
         ad.setTitle(adDTO.getTitle());
         ad.setPrice(adDTO.getPrice());
         ad.setDescription(adDTO.getDescription());
@@ -192,25 +201,19 @@ public class AdServiceImpl implements AdService {
      *
      * @param id    Идентификатор объявления, изображение которого нужно обновить.
      * @param image Файл нового изображения.
-     * @return URL обновлённого изображения.
      * @see ImageService
      */
     @Override
-    public String updateAdImage(Integer id, MultipartFile image) {
-        Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
-            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
-        });
+    public void updateAdImage(Integer id, MultipartFile image) {
+        log.info("Method {}", MethodLog.getMethodName());
+        Ad ad = getAdById(id);
         if (ad.getImage() != null) {
             imageService.deleteImage(ad.getImage().getId());
         }
-
         Image newImage = imageService.saveImage(image);
-        Integer imageId = newImage.getId();
         ad.setImage(newImage);
         adRepository.save(ad);
-
-        return "/ads/image/" + imageId;
+        log.info("Image {} saved", newImage.getId());
     }
 
     /**
@@ -225,10 +228,7 @@ public class AdServiceImpl implements AdService {
      */
     @Override
     public void deleteAd(Integer id) {
-        Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
-            return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
-        });
+        Ad ad = getAdById(id);
         log.info("Ad {} {} deleted", ad.getId(), ad.getTitle());
         adRepository.delete(ad);
     }
@@ -241,6 +241,7 @@ public class AdServiceImpl implements AdService {
      * @throws AdNotFoundException если объявление с указанным идентификатором не найдено.
      */
     @Override
+    @Transactional(readOnly = true)
     public Ad getAdById(Integer adId) {
         log.info("Fetching Ad with id: {}", adId);
         return adRepository.findById(adId).orElseThrow(() -> {
@@ -254,13 +255,13 @@ public class AdServiceImpl implements AdService {
      * для предоставления ему право на удаление/обновление
      *
      * @param username - имя пользователя
-     * @param id - id объявления
+     * @param id       - id объявления
      */
     public boolean isOwner(String username, Integer id) {
         log.info("Method {}, user {}, ad {}", MethodLog.getMethodName(), username, id);
 
         Ad ad = adRepository.findById(id).orElseThrow(() -> {
-            log.warn(AD_NOT_FOUND_MSG, id);
+            log.warn("Ad with {} not found", id);
             return new AdNotFoundException(String.format(AD_NOT_FOUND_MSG, id));
         });
         if (!ad.getUser().getUsername().equals(username)) {
