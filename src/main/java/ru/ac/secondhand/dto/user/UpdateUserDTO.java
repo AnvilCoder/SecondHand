@@ -7,6 +7,13 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+/**
+ * Класс для обновления данных пользователя.
+ * <p>
+ * Класс {@code UpdateUserDTO} используется для передачи данных, которые могут быть обновлены
+ * пользователем, такие как имя (firstName), фамилия (lastName) и номер телефона (phone).
+ * </p>
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

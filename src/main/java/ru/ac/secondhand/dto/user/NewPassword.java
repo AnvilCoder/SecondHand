@@ -6,6 +6,13 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Size;
 
+/**
+ * Класс для представления нового пароля пользователя.
+ * <p>
+ * Класс {@code NewPassword} используется для передачи данных о смене пароля пользователя,
+ * включая текущий пароль (currentPassword) и новый пароль (newPassword).
+ * </p>
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
