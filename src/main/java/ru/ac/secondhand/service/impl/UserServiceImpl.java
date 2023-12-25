@@ -24,7 +24,6 @@ import ru.ac.secondhand.utils.MethodLog;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-//@NoArgsConstructor(force = true) Димка чини
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
