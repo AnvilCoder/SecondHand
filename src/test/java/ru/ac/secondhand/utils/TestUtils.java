@@ -1,5 +1,6 @@
 package ru.ac.secondhand.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.dto.ad.AdDTO;
@@ -67,8 +68,6 @@ public class TestUtils {
     public static final String INVALID_IMAGE_NAME_EXCEPTION_MSG = "Should throw InvalidFileException for invalid image name";
 
 
-
-
     private static final byte[] BYTE_ARRAY;
 
     static {
@@ -128,14 +127,14 @@ public class TestUtils {
 
     public static User getUserEntity() {
         return User.builder().
-        id(USER_ID).
-        username("username@gmail.com").
-        password("password").
-        firstName("first").
-        lastName("last").
-        phone("79998886655").
-        role(Role.USER).
-        image(getImage()).build();
+                id(USER_ID).
+                username("username@gmail.com").
+                password("password").
+                firstName("first").
+                lastName("last").
+                phone("79998886655").
+                role(Role.USER).
+                image(getImage()).build();
     }
 
     public static RegisterDTO getRegisterDTO() {
@@ -167,6 +166,18 @@ public class TestUtils {
     public static MultipartFile getMultipartFile() {
         byte[] content = "test image content".getBytes();
         return new MockMultipartFile("file", "test.jpg", "image/jpeg", content);
+    }
+
+    public static MockMultipartFile createImageFile() {
+        byte[] content = "test image content".getBytes();
+        return new MockMultipartFile("image", "image.jpg", "image/jpeg", content);
+    }
+
+    public static MockMultipartFile createPropertiesFile() throws Exception {
+        CreateOrUpdateAd adProperties = getCreateOrUpdateAd();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String adPropertiesJson = objectMapper.writeValueAsString(adProperties);
+        return new MockMultipartFile("properties", "", "application/json", adPropertiesJson.getBytes());
     }
 
     public static Comment getCommentEntity() {
@@ -224,5 +235,13 @@ public class TestUtils {
         Comment comment = new Comment();
         comment.setId(COMMENT_ID);
         return comment;
+    }
+
+    public static String asJsonString(Object o) {
+        try {
+            return new ObjectMapper().writeValueAsString(o);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
