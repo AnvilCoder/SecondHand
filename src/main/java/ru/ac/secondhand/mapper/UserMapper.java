@@ -7,7 +7,21 @@ import ru.ac.secondhand.dto.user.RegisterDTO;
 import ru.ac.secondhand.dto.user.UpdateUserDTO;
 import ru.ac.secondhand.dto.user.UserDTO;
 import ru.ac.secondhand.entity.User;
-
+/**
+ * Интерфейс-маппер для преобразования между объектами пользователь и их DTO представлениями.
+ * <p>
+ * Этот интерфейс определён с использованием MapStruct для автоматического маппинга
+ * данных между сущностями комментариев ({@code User}) и различными DTO ({@code UpdateUserDTO},
+ * {@code UserDTO}, {@code RegisterDTOToUser}). Он обеспечивает гибкость и безопасность типов
+ * при конвертации данных в приложении.
+ * </p>
+ * <p>
+ * Интерфейс содержит методы для преобразования сущности объявления в DTO,
+ * в том числе методы для создания расширенных и сокращённых представлений объявления.
+ * </p>
+ *
+ * @author x3imal
+ */
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
