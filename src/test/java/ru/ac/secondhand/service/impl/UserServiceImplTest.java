@@ -136,10 +136,13 @@ class UserServiceImplTest {
         UpdateUserDTO updateUserDTO = new UpdateUserDTO(); // Настройте DTO
         User mockUser = TestUtils.getUserEntity();
 
+        // Мокирование метода findUser
         Mockito.doReturn(mockUser).when(userService).findUser();
 
+        // Вызов метода
         UpdateUserDTO result = userService.updateUser(updateUserDTO);
 
+        // Проверки
         verify(userService).findUser();
         verify(userMapper).updateUserDTOToUser(updateUserDTO, mockUser);
         verify(userRepository).save(mockUser);
