@@ -7,14 +7,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +25,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import ru.ac.secondhand.dto.comment.CommentDTO;
 import ru.ac.secondhand.dto.comment.Comments;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
+import ru.ac.secondhand.service.CommentService;
 
 @RestController
 @RequestMapping("/ads")
@@ -38,6 +41,8 @@ import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
                 content = @Content(schema = @Schema(implementation = HttpServerErrorException.InternalServerError.class)))})
 public class CommentController {
 
+    private final CommentService commentService;
+
 
     @Operation(summary = "Получить комментарии объявления.")
     @ApiResponses(value = {
@@ -48,7 +53,8 @@ public class CommentController {
     })
     @GetMapping("/{id}/comments")
     public ResponseEntity<?> getComments(@PathVariable("id") Integer adId) {
-        return ResponseEntity.ok().build();
+        Comments comments = commentService.getComments(adId);
+        return ResponseEntity.ok(comments);
     }
 
     @Operation(summary = "Добавить новый комментарий.")
@@ -61,7 +67,8 @@ public class CommentController {
     @PostMapping("/{id}/comments")
     public ResponseEntity<?> addComment(@PathVariable("id") Integer adId,
                                         @RequestBody CreateOrUpdateComment commentRequest) {
-        return ResponseEntity.ok().build();
+        CommentDTO comment = commentService.createComment(commentRequest, adId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(comment);
     }
 
     @Operation(summary = "Удалить комментарий.")
@@ -73,9 +80,11 @@ public class CommentController {
             @ApiResponse(responseCode = "404", description = "Комментарий не найден.")
     })
     @DeleteMapping("/{adId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ADMIN') or @commentServiceImpl.isOwner(authentication.name, #commentId)")
     public ResponseEntity<?> deleteComment(@PathVariable("adId") Integer adId,
                                            @PathVariable("commentId") Integer commentId) {
-        return ResponseEntity.ok().build();
+        commentService.delete(adId, commentId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Обновить/редактировать комментарий.")
@@ -86,9 +95,11 @@ public class CommentController {
             @ApiResponse(responseCode = "403", description = "Нехватает прав для этой команды."),
             @ApiResponse(responseCode = "404", description = "Комментарий не найден.")
     })
-    @PutMapping("/{adId}/comments/{commentId}")
+    @PatchMapping("/{adId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ADMIN') or @commentServiceImpl.isOwner(authentication.name, #commentId)")
     public ResponseEntity<?> updateComment(@PathVariable("adId") Integer adId, @PathVariable("commentId") Integer commentId,
                                            @RequestBody CreateOrUpdateComment commentRequest) {
-        return ResponseEntity.ok().build();
+        CommentDTO updateCommentDTO = commentService.updateComment(adId, commentId, commentRequest);
+        return ResponseEntity.ok(updateCommentDTO);
     }
 }

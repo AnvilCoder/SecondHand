@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,6 +18,22 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.List;
 
+/**
+ * Сущность, представляющая объявление в системе.
+ * <p>
+ * Класс {@code Ad} является сущностью JPA и представляет собой объявление.
+ * Включает в себя данные, такие как название, описание и цена объявления.
+ * Также связан с другими сущностями, такими как {@code Image}, {@code User},
+ * и {@code Comment}, для представления изображения объявления, пользователя,
+ * опубликовавшего объявление, и комментариев к объявлению соответственно.
+ * </p>
+ * <p>
+ * Этот класс используется для взаимодействия с базой данных и представления информации
+ * о объявлениях в приложении.
+ * </p>
+ *
+ * @author fifimova
+ */
 @Entity
 @Data
 @NoArgsConstructor
@@ -44,6 +61,6 @@ public class Ad {
     private User user;
 
     @ToString.Exclude
-    @OneToMany(mappedBy = "ad")
+    @OneToMany(mappedBy = "ad", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 }

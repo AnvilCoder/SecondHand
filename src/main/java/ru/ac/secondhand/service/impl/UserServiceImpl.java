@@ -20,6 +20,7 @@ import ru.ac.secondhand.service.ImageService;
 import ru.ac.secondhand.service.UserService;
 import ru.ac.secondhand.utils.MethodLog;
 
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final PasswordEncoder encoder;
+
 
     @Override
     public User findUser() {
@@ -41,6 +43,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Изменение пароля пользователя
+     *
      * @param newPassword
      */
     @Override
@@ -61,6 +64,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Получение данных пользователя
+     *
      * @return UserDTO
      */
     @Override
@@ -73,6 +77,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Обновление данных пользователя - имени, отчества и номера телефона
+     *
      * @param updateUserDTO
      * @return UpdateUserDTO
      */
@@ -89,6 +94,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * Обновление аватара пользователя
+     *
      * @param image
      */
     @Override

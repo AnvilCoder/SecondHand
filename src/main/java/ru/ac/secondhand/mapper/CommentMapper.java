@@ -21,7 +21,7 @@ public interface CommentMapper {
                 .map(this::toCommentDTO)
                 .collect(Collectors.toList());
         Comments commentsDTO = new Comments();
-        commentsDTO.setComments(commentDTOS);
+        commentsDTO.setResults(commentDTOS);
         commentsDTO.setCount(commentDTOS.size());
         return commentsDTO;
     }
@@ -33,13 +33,13 @@ public interface CommentMapper {
     @Mapping(target = "pk", source = "comment.id")
     CommentDTO toCommentDTO(Comment comment);
 
-    default Long mapLocalDateTimeToLong(LocalDateTime dateTime) { // выражение слишком длинное выходит, поэтому дефолтный метод
+    default Long mapLocalDateTimeToLong(LocalDateTime dateTime) {
         return dateTime == null ? null : dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    default String mapUserImageToUrl(User user) { // та же фигня
+    default String mapUserImageToUrl(User user) {
         if (user != null && user.getImage() != null) {
-            return "/users/image/" + user.getImage().getId();
+            return "/image/" + user.getImage().getId();
         }
         return null;
     }
