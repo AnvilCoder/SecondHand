@@ -198,7 +198,7 @@ class AdsControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.patch("/ads/{id}", adId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(TestUtils.asJsonString(updateInfo)))
-                .andExpect(status().isForbidden()); //TODO: не работает возвращает 200
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -263,7 +263,7 @@ class AdsControllerTest {
                             request.setMethod("PATCH");
                             return request;
                         }))
-                .andExpect(status().isForbidden()); //TODO: тоже 200
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -318,7 +318,7 @@ class AdsControllerTest {
         Mockito.when(adService.isOwner(any(String.class), anyInt())).thenReturn(false);
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/ads/{id}", adId))
-                .andExpect(status().isForbidden());// TODO: тоже 200 :(
+                .andExpect(status().isForbidden());
     }
 
     @Test
