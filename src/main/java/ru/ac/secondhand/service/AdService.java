@@ -24,4 +24,6 @@ public interface AdService {
     void deleteAd(Integer id);
 
     Ad getAdById(Integer adId);
+
+    boolean isOwner(String username, Integer id);
 }

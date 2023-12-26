@@ -1,5 +1,6 @@
 package ru.ac.secondhand.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.dto.ad.AdDTO;
@@ -167,6 +168,18 @@ public class TestUtils {
         return new MockMultipartFile("file", "test.jpg", "image/jpeg", content);
     }
 
+    public static MockMultipartFile createImageFile() {
+        byte[] content = "test image content".getBytes();
+        return new MockMultipartFile("image", "image.jpg", "image/jpeg", content);
+    }
+
+    public static MockMultipartFile createPropertiesFile() throws Exception {
+        CreateOrUpdateAd adProperties = getCreateOrUpdateAd();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String adPropertiesJson = objectMapper.writeValueAsString(adProperties);
+        return new MockMultipartFile("properties", "", "application/json", adPropertiesJson.getBytes());
+    }
+
     public static Comment getCommentEntity() {
         Comment comment = new Comment();
         comment.setId(COMMENT_ID);
@@ -240,5 +253,12 @@ public class TestUtils {
         comment.setUser(user);
         return comment;
     }
-
+  
+  public static String asJsonString(Object o) {
+        try {
+            return new ObjectMapper().writeValueAsString(o);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

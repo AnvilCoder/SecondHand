@@ -57,7 +57,7 @@ public class AdsController {
         return ResponseEntity.ok(ads);
     }
 
-    @Operation(summary = "Получить список всех пользователей")
+    @Operation(summary = "Получить инфо об объявлении")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
