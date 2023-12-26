@@ -9,7 +9,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -51,14 +50,12 @@ class UserServiceImplTest {
     private PasswordEncoder encoder;
     @Captor
     private ArgumentCaptor<User> userCaptor;
-    @Spy
-    private UserServiceImpl userServiceSpy;
     @InjectMocks
     private UserServiceImpl userService;
 
     @BeforeEach
     void setUp() {
-        userServiceSpy = Mockito.spy(userService);
+        userService = Mockito.spy(userService);
 
         // Мокирование SecurityContext
         Authentication authentication = Mockito.mock(Authentication.class);
@@ -75,66 +72,49 @@ class UserServiceImplTest {
 
     @Test
     public void findUser_UserExists_ReturnsUser() {
-        // Мокирование UserRepository
         User expectedUser = TestUtils.getUserEntity();
         when(userRepository.findByUsername("username")).thenReturn(Optional.of(expectedUser));
 
-        // Выполнение
         User result = userService.findUser();
 
-        // Проверка
         assertEquals(expectedUser, result);
     }
 
     @Test
     public void findUser_UserDoesNotExist_ThrowsException() {
-        // Мокирование UserRepository
         when(userRepository.findByUsername("username")).thenReturn(Optional.empty());
 
-        // Выполнение и Проверка
         assertThrows(UserNotFoundException.class, () -> userService.findUser());
     }
 
     @Test
     public void setPassword_CorrectOldPassword_UpdatesPassword() {
-        User expectedUser = TestUtils.getUserEntity();
-        // Создание spy на реальном объекте userService
-        UserServiceImpl userServiceSpy = Mockito.spy(userService);
-        // Настройка поведения spy
-        Mockito.doReturn(expectedUser).when(userServiceSpy).findUser();
+        User mockUser = TestUtils.getUserEntity();
+        Mockito.doReturn(mockUser).when(userService).findUser();
 
-        // Подготовка данных
         NewPassword newPassword = new NewPassword("password", "newPassword");
 
-        // Мокирование кодировщика паролей
-        when(encoder.matches(newPassword.getCurrentPassword(), expectedUser.getPassword())).thenReturn(true);
+        when(encoder.matches(newPassword.getCurrentPassword(), mockUser.getPassword())).thenReturn(true);
         when(encoder.encode(newPassword.getNewPassword())).thenReturn("encodedPassword");
 
-        // Вызов метода на объекте spy
-        userServiceSpy.setPassword(newPassword);
+        userService.setPassword(newPassword);
 
-        // Проверка вызовов
-        verify(userServiceSpy).findUser();
+        verify(userService).findUser();
         verify(userRepository).save(any(User.class));
-        assertEquals("encodedPassword", expectedUser.getPassword());
+        assertEquals("encodedPassword", mockUser.getPassword());
     }
 
     @Test
     public void setPassword_IncorrectOldPassword_ThrowsException() {
-        User expectedUser = TestUtils.getUserEntity();
-        // Создание spy на реальном объекте userService
-        UserServiceImpl userServiceSpy = Mockito.spy(userService);
-        // Настройка поведения spy
-        Mockito.doReturn(expectedUser).when(userServiceSpy).findUser();
+        User mockUser = TestUtils.getUserEntity();
+        Mockito.doReturn(mockUser).when(userService).findUser();
 
-        // Подготовка данных
         NewPassword newPassword = new NewPassword("password", "newPassword");
 
-        // Мокирование кодировщика паролей
-        when(encoder.matches(newPassword.getCurrentPassword(), expectedUser.getPassword())).thenReturn(false);
+        when(encoder.matches(newPassword.getCurrentPassword(), mockUser.getPassword())).thenReturn(false);
 
         assertThrows(IncorrectPasswordException.class,
-                () -> userServiceSpy.setPassword(newPassword));
+                () -> userService.setPassword(newPassword));
     }
 
     @Test
@@ -153,19 +133,17 @@ class UserServiceImplTest {
 
     @Test
     void updateUser_UpdatesAndReturnsUserDTO() {
-        // Подготовка данных
         UpdateUserDTO updateUserDTO = new UpdateUserDTO(); // Настройте DTO
-        User mockUser = new User();
-        mockUser.setId(1);
+        User mockUser = TestUtils.getUserEntity();
 
         // Мокирование метода findUser
-        Mockito.doReturn(mockUser).when(userServiceSpy).findUser();
+        Mockito.doReturn(mockUser).when(userService).findUser();
 
         // Вызов метода
-        UpdateUserDTO result = userServiceSpy.updateUser(updateUserDTO);
+        UpdateUserDTO result = userService.updateUser(updateUserDTO);
 
         // Проверки
-        verify(userServiceSpy).findUser();
+        verify(userService).findUser();
         verify(userMapper).updateUserDTOToUser(updateUserDTO, mockUser);
         verify(userRepository).save(mockUser);
         assertEquals(updateUserDTO, result);
@@ -173,7 +151,6 @@ class UserServiceImplTest {
 
     @Test
     public void updateAvatarTest() {
-        // Создаем моки
         MultipartFile image = mock(MultipartFile.class);
         User mockUser = new User();
         mockUser.setId(1);
@@ -183,17 +160,13 @@ class UserServiceImplTest {
         Image newImage = new Image();
         newImage.setId(2);
 
-        // Настраиваем поведение моков
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(mockUser));
         when(imageService.saveImage(any(MultipartFile.class))).thenReturn(newImage);
 
-        // Вызываем метод
         userService.updateAvatar(image);
 
-        // Проверяем, что старое изображение было удалено
         verify(imageService).deleteImage(oldImage.getId());
 
-        // Проверяем, что новое изображение сохранено
         verify(userRepository).save(userCaptor.capture());
         User savedUser = userCaptor.getValue();
         assertEquals(newImage.getId(), savedUser.getImage().getId());

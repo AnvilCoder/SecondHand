@@ -237,7 +237,24 @@ public class TestUtils {
         return comment;
     }
 
-    public static String asJsonString(Object o) {
+    public static Comment createCastomComment() {
+        Comment comment = new Comment();
+        comment.setId(COMMENT_ID);
+        comment.setCreatedAt(LocalDateTime.now());
+
+        User user = new User();
+        user.setId(USER_ID);
+        user.setFirstName("John Doe");
+
+        Image image = new Image();
+        image.setId(IMAGE_ID);
+        user.setImage(image);
+
+        comment.setUser(user);
+        return comment;
+    }
+  
+  public static String asJsonString(Object o) {
         try {
             return new ObjectMapper().writeValueAsString(o);
         } catch (Exception e) {

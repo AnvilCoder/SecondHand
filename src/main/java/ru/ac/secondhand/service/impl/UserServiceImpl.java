@@ -20,16 +20,17 @@ import ru.ac.secondhand.service.ImageService;
 import ru.ac.secondhand.service.UserService;
 import ru.ac.secondhand.utils.MethodLog;
 
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
-//@NoArgsConstructor(force = true) Димка чини
 public class UserServiceImpl implements UserService {
 
     private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final PasswordEncoder encoder;
+
 
     @Override
     public User findUser() {
