@@ -1,6 +1,5 @@
 package ru.ac.secondhand.controller;
 
-
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,7 @@ import ru.ac.secondhand.service.ImageService;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/image")
-public class ImageController { //TODO добавил для теста, нужно будет удалить потом.
+public class ImageController {
 
     private final ImageService imageService;
 
