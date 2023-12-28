@@ -9,6 +9,7 @@ import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
 import ru.ac.secondhand.dto.comment.CommentDTO;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
+import ru.ac.secondhand.dto.user.NewPassword;
 import ru.ac.secondhand.dto.user.RegisterDTO;
 import ru.ac.secondhand.dto.user.UpdateUserDTO;
 import ru.ac.secondhand.entity.Ad;
@@ -126,15 +127,22 @@ public class TestUtils {
     }
 
     public static User getUserEntity() {
-        return User.builder().
-                id(USER_ID).
-                username("username@gmail.com").
-                password("password").
-                firstName("first").
-                lastName("last").
-                phone("79998886655").
-                role(Role.USER).
-                image(getImage()).build();
+        return User.builder()
+                .id(USER_ID)
+                .username("username@gmail.com")
+                .password("password")
+                .firstName("first")
+                .lastName("last")
+                .phone("79998886655")
+                .role(Role.USER)
+                .image(getImage()).build();
+    }
+
+    public static NewPassword getNewPassword() {
+        return NewPassword.builder()
+                .currentPassword("password")
+                .newPassword("newPassword")
+                .build();
     }
 
     public static RegisterDTO getRegisterDTO() {
@@ -253,8 +261,8 @@ public class TestUtils {
         comment.setUser(user);
         return comment;
     }
-  
-  public static String asJsonString(Object o) {
+
+    public static String asJsonString(Object o) {
         try {
             return new ObjectMapper().writeValueAsString(o);
         } catch (Exception e) {
