@@ -154,4 +154,6 @@ public interface AdService {
      * @throws AdNotFoundException если объявление с указанным идентификатором не найдено.
      */
     Ad getAdById(Integer adId);
+
+    boolean isOwner(String username, Integer id);
 }

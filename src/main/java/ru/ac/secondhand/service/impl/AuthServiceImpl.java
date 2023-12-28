@@ -2,12 +2,11 @@ package ru.ac.secondhand.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.ac.secondhand.dto.user.RegisterDTO;
-import ru.ac.secondhand.entity.User;
 import ru.ac.secondhand.exception.IncorrectPasswordException;
 import ru.ac.secondhand.exception.UserAlreadyExistException;
 import ru.ac.secondhand.mapper.UserMapper;
@@ -21,7 +20,7 @@ import ru.ac.secondhand.utils.MethodLog;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsService userDetailsService;
     private final PasswordEncoder encoder;
     private final UserMapper userMapper;
 
