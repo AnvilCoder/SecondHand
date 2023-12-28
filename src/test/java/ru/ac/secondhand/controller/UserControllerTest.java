@@ -1,7 +1,5 @@
 package ru.ac.secondhand.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +12,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.ac.secondhand.dto.user.NewPassword;
+import ru.ac.secondhand.dto.user.UpdateUserDTO;
 import ru.ac.secondhand.entity.User;
 import ru.ac.secondhand.repository.UserRepository;
+import ru.ac.secondhand.secutity.WithMockCustomUser;
 import ru.ac.secondhand.utils.TestUtils;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,9 +37,6 @@ class UserControllerTest {
     private UserRepository userRepository;
 
     @Autowired
-    private ObjectMapper jsonMapper;
-
-    @Autowired
     private PasswordEncoder encoder;
 
     @BeforeEach
@@ -49,12 +47,8 @@ class UserControllerTest {
         userRepository.save(user);
     }
 
-    @AfterEach
-    void tearDown() {
-    }
-
     @Test
-    @WithMockUser(username = "username@gmail.com", roles = "USER")
+    @WithMockCustomUser
     void getUserData_Ok() throws Exception {
         mockMvc.perform(get("/users/me"))
                 .andExpect(status().isOk())
@@ -73,18 +67,43 @@ class UserControllerTest {
     }
 
     @Test
-    public void getInformation_throw401() throws Exception {
+    public void getUserData_Unauthorized() throws Exception {
         mockMvc.perform(get("/users/me"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @WithMockUser(username = "username@gmail.com", roles = "USER")
-    public void setPassword_status_isOk() throws Exception {
+    @WithMockCustomUser
+    public void setPassword_Ok() throws Exception {
         NewPassword newPassword = TestUtils.getNewPassword();
-        String json = jsonMapper.writeValueAsString(newPassword);
+        String json = TestUtils.asJsonString(newPassword);
 
         mockMvc.perform(post("/users/set_password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockCustomUser
+    public void setPassword_Forbidden() throws Exception {
+        NewPassword newPassword = TestUtils.getNewPassword();
+        newPassword.setCurrentPassword("someIncorrectPassword");
+        String json = TestUtils.asJsonString(newPassword);
+
+        mockMvc.perform(post("/users/set_password")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockCustomUser
+    public void updateUser_Ok() throws Exception {
+        UpdateUserDTO updateUserDTO = TestUtils.getUpdateUserDTO();
+        String json = TestUtils.asJsonString(updateUserDTO);
+
+        mockMvc.perform(patch("/users/me")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isOk());
