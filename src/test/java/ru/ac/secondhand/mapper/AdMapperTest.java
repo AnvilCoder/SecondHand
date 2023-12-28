@@ -38,7 +38,7 @@ class AdMapperTest {
         Assertions.assertThat(extendedAd.getAuthorLastName()).isEqualTo(ad.getUser().getLastName());
         Assertions.assertThat(extendedAd.getDescription()).isEqualTo(ad.getDescription());
         Assertions.assertThat(extendedAd.getEmail()).isEqualTo(ad.getUser().getUsername());
-        Assertions.assertThat(extendedAd.getImage()).isEqualTo(String.format("/ads/image/%d", ad.getImage().getId()));
+        Assertions.assertThat(extendedAd.getImage()).isEqualTo(String.format("/image/%d", ad.getImage().getId()));
         Assertions.assertThat(extendedAd.getPhone()).isEqualTo(ad.getUser().getPhone());
         Assertions.assertThat(extendedAd.getPrice()).isEqualTo(ad.getPrice());
         Assertions.assertThat(extendedAd.getTitle()).isEqualTo(ad.getTitle());
@@ -51,7 +51,7 @@ class AdMapperTest {
         AdDTO adDTO = mapper.toAdDTO(ad);
 
         Assertions.assertThat(ad.getUser().getId()).isEqualTo(adDTO.getAuthor());
-        Assertions.assertThat(adDTO.getImage()).isEqualTo(String.format("/ads/image/%d", ad.getImage().getId()));
+        Assertions.assertThat(adDTO.getImage()).isEqualTo(String.format("/image/%d", ad.getImage().getId()));
         Assertions.assertThat(ad.getId()).isEqualTo(adDTO.getPk());
         Assertions.assertThat(ad.getPrice()).isEqualTo(adDTO.getPrice());
         Assertions.assertThat(ad.getTitle()).isEqualTo(adDTO.getTitle());

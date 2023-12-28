@@ -1,4 +1,4 @@
-package ru.ac.secondhand.controller;
+package ru.ac.secondhand.it;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

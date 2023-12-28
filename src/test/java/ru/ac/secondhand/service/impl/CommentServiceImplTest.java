@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.test.web.servlet.MockMvc;
 import ru.ac.secondhand.dto.comment.CommentDTO;
 import ru.ac.secondhand.dto.comment.Comments;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
@@ -26,7 +25,6 @@ import ru.ac.secondhand.repository.UserRepository;
 import ru.ac.secondhand.service.AdService;
 import ru.ac.secondhand.utils.TestUtils;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +44,8 @@ public class CommentServiceImplTest {
 
     @Mock
     CommentRepository commentRepository;
+    @Mock
+    UserRepository userRepository;
     @Mock
     AdService adService;
     @Mock
@@ -115,11 +116,13 @@ public class CommentServiceImplTest {
 
         Comment newComment = TestUtils.getCommentEntity();
         CommentDTO expectedCommentDTO = TestUtils.getCommentDTO();
+        ru.ac.secondhand.entity.User mockUser = TestUtils.getUserEntity();
 
         when(adService.getAdById(adId)).thenReturn(ad);
         when(mapper.toComment(createOrUpdateComment)).thenReturn(newComment);
 
         when(commentRepository.save(any(Comment.class))).thenReturn(newComment);
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.ofNullable(mockUser));
         when(mapper.toCommentDTO(any(Comment.class))).thenReturn(expectedCommentDTO);
 
         CommentDTO actualCommentDTO = commentService.createComment(createOrUpdateComment, adId);
