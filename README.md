@@ -1,11 +1,11 @@
-# SecondHand <sub><sup>by [AnvilCoder](https://github.com/AnvilCoder) <img alt="AnvilCoder Logo" height="20" src="F:\несистемная папка\AnvilCoder\photo_2023-06-15_23-01-57.jpg" width="20"/></sup></sub>
+# SecondHand <sub><sup>by [AnvilCoder](https://github.com/AnvilCoder) <img alt="AnvilCoder Logo" height="20" src="https://github.com/AnvilCoder/SecondHand/assets/124284597/d6e40489-986e-42b2-be2c-67c8087a0714" width="20"/></sup></sub>
 
 ## 📚 Оглавление
 
 - [О проекте](#-о-проекте)
 - [Технологии и библиотеки](#-технологии-и-библиотеки)
 - [Команда разработчиков](#-команда-разработчиков)
-- [Как запустить проект](#-как-запустить-проект)
+- [Как запустить проект SecondHand](#-как-запустить-проект-secondhand)
 - [Использование приложения](#-использование-приложения)
 
 ## 🌟 О проекте
@@ -32,7 +32,7 @@
 
 ### Дмитрий - Backend Developer
 
-<img alt="Дмитрий" height="100" src="F:\несистемная папка\AnvilCoder\photo_2023-08-30_19-22-09.jpg" width="100"/>
+<img alt="Дмитрий" height="100" src="https://github.com/AnvilCoder/SecondHand/assets/124284597/9bde744c-34f9-4e3f-8350-9d0b38fd517f" width="100"/>
 
 - **Telegram:** [Burko20](https://t.me/Burko20)
 - **GitHub:** [Ldv236](https://github.com/Ldv236)
@@ -42,7 +42,7 @@
 
 ### Алексей - Backend Developer
 
-<img alt="Алексей" height="100" src="F:\несистемная папка\AnvilCoder\photo_2023-10-26_17-44-38.jpg" width="100"/>
+<img alt="Алексей" height="100" src="https://github.com/AnvilCoder/SecondHand/assets/124284597/3ceecff6-c8bd-4491-9061-0366870cc1cd" width="100"/>
 
 - **Telegram:** [DiabluSun](https://t.me/DiabluSun)
 - **GitHub:** [x3imal](https://github.com/x3imal)
@@ -50,7 +50,7 @@
 
 ### Александра - Backend Developer
 
-<img alt="Александра" height="100" src="F:\несистемная папка\AnvilCoder\photo_2023-12-29_09-46-24.jpg" width="100"/>
+<img alt="Александра" height="100" src="https://github.com/AnvilCoder/SecondHand/assets/124284597/25daaf71-9a02-42f6-8c57-f0d6b90f5f7a" width="100"/>
 
 - **Telegram:** [fifimova](https://t.me/fifimova)
 - **GitHub:** [fifimova](https://github.com/fifimova)
@@ -63,7 +63,7 @@
 Вот скриншот из нашего Miro, который олицетворяет дух нашей команды и наш процесс работы:
 
 <p align="center">
-  <img alt="Дух нашей команды" height="300" src="F:\несистемная папка\AnvilCoder\photo_2023-12-29_02-30-51.jpg" width="550"/>
+  <img alt="Дух нашей команды" height="300" src="https://github.com/AnvilCoder/SecondHand/assets/124284597/396d882e-31b7-400b-b64d-7231242ebc40" width="550"/>
 </p>
 
 # 🚀 Как запустить проект SecondHand
