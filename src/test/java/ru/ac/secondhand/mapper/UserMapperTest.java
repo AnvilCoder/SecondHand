@@ -42,7 +42,7 @@ class UserMapperTest {
         UserDTO userDTO = mapper.toUserDTO(user);
 
         Assertions.assertThat(userDTO.getId()).isEqualTo(user.getId());
-        Assertions.assertThat(userDTO.getImage()).isEqualTo(String.format("/users/image/%d", user.getImage().getId()));
+        Assertions.assertThat(userDTO.getImage()).isEqualTo(String.format("/image/%d", user.getImage().getId()));
         Assertions.assertThat(userDTO.getEmail()).isEqualTo(user.getUsername());
         Assertions.assertThat(userDTO.getFirstName()).isEqualTo(user.getFirstName());
         Assertions.assertThat(userDTO.getLastName()).isEqualTo(user.getLastName());
