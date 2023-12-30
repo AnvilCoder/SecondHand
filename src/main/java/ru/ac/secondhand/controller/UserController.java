@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import ru.ac.secondhand.service.UserService;
 @RequestMapping("users")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 @Tag(name = "Пользователи", description = "Управление данными пользователей")
 @ApiResponses(value = {
         @ApiResponse(responseCode = "401", description = "UNAUTHORIZED: пользователь не авторизован"),
@@ -65,7 +67,7 @@ public class UserController {
                     schema = @Schema(implementation = UpdateUserDTO.class))
     )
     @PatchMapping("/me")
-    public ResponseEntity<?> updateUserData(UpdateUserDTO updateUserDTO) {
+    public ResponseEntity<?> updateUserData(@RequestBody UpdateUserDTO updateUserDTO) {
         UpdateUserDTO user = userService.updateUser(updateUserDTO);
         return ResponseEntity.ok(user);
     }
