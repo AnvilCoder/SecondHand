@@ -255,6 +255,7 @@ public class AdServiceImpl implements AdService {
      * @param username - имя пользователя
      * @param id       - id объявления
      */
+    @Override
     public boolean isOwner(String username, Integer id) {
         log.info("Method {}, user {}, ad {}", MethodLog.getMethodName(), username, id);
 

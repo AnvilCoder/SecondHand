@@ -2,6 +2,7 @@ package ru.ac.secondhand.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,7 +12,25 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+/**
+ * Конфигурация безопасности веб-приложения.
+ * <p>
+ * Этот класс аннотирован как {@code @EnableWebSecurity}, что позволяет настроить
+ * параметры безопасности приложения. Он определяет правила доступа для различных
+ * URL-адресов и конфигурирует кросс-доменные запросы (CORS) для разрешенных источников.
+ * </p>
+ * <p>
+ * Внутри этого класса определено белое списком URL-адресов ({@code AUTH_WHITELIST}),
+ * которые доступны без аутентификации. Также определены правила доступа для остальных
+ * URL-адресов, включая разрешенные HTTP-методы и заголовки.
+ * </p>
+ * <p>
+ * Класс также создает бин {@code PasswordEncoder} для хеширования паролей пользователей
+ * с использованием алгоритма BCrypt.
+ * </p>
+ */
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig {
 
     private static final String[] AUTH_WHITELIST = {

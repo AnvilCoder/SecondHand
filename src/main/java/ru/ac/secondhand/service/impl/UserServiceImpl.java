@@ -32,6 +32,12 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder encoder;
 
 
+    /**
+     * Возвращает текущего пользователя.
+     *
+     * @return Объект пользователя, если пользователь аутентифицирован
+     * @throws UserNotFoundException Если пользователь не найден
+     */
     @Override
     public User findUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

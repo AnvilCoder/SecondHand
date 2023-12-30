@@ -1,5 +1,6 @@
 package ru.ac.secondhand.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ac.secondhand.dto.ad.AdDTO;
@@ -8,6 +9,7 @@ import ru.ac.secondhand.dto.ad.CreateOrUpdateAd;
 import ru.ac.secondhand.dto.ad.ExtendedAd;
 import ru.ac.secondhand.dto.comment.CommentDTO;
 import ru.ac.secondhand.dto.comment.CreateOrUpdateComment;
+import ru.ac.secondhand.dto.user.NewPassword;
 import ru.ac.secondhand.dto.user.RegisterDTO;
 import ru.ac.secondhand.dto.user.UpdateUserDTO;
 import ru.ac.secondhand.entity.Ad;
@@ -125,15 +127,22 @@ public class TestUtils {
     }
 
     public static User getUserEntity() {
-        return User.builder().
-                id(USER_ID).
-                username("username@gmail.com").
-                password("password").
-                firstName("first").
-                lastName("last").
-                phone("79998886655").
-                role(Role.USER).
-                image(getImage()).build();
+        return User.builder()
+                .id(USER_ID)
+                .username("username@gmail.com")
+                .password("password")
+                .firstName("first")
+                .lastName("last")
+                .phone("79998886655")
+                .role(Role.USER)
+                .image(getImage()).build();
+    }
+
+    public static NewPassword getNewPassword() {
+        return NewPassword.builder()
+                .currentPassword("password")
+                .newPassword("newPassword")
+                .build();
     }
 
     public static RegisterDTO getRegisterDTO() {
@@ -165,6 +174,18 @@ public class TestUtils {
     public static MultipartFile getMultipartFile() {
         byte[] content = "test image content".getBytes();
         return new MockMultipartFile("file", "test.jpg", "image/jpeg", content);
+    }
+
+    public static MockMultipartFile createImageFile() {
+        byte[] content = "test image content".getBytes();
+        return new MockMultipartFile("image", "image.jpg", "image/jpeg", content);
+    }
+
+    public static MockMultipartFile createPropertiesFile() throws Exception {
+        CreateOrUpdateAd adProperties = getCreateOrUpdateAd();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String adPropertiesJson = objectMapper.writeValueAsString(adProperties);
+        return new MockMultipartFile("properties", "", "application/json", adPropertiesJson.getBytes());
     }
 
     public static Comment getCommentEntity() {
@@ -241,4 +262,11 @@ public class TestUtils {
         return comment;
     }
 
+    public static String asJsonString(Object o) {
+        try {
+            return new ObjectMapper().writeValueAsString(o);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

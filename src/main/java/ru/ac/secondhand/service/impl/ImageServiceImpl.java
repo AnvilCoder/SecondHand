@@ -125,12 +125,23 @@ public class ImageServiceImpl implements ImageService {
         }
     }
 
-
+    /**
+     * Генерирует уникальное имя файла на основе исходного имени.
+     *
+     * @param originalFilename Исходное имя файла
+     * @return Уникальное имя файла
+     */
     public String generateUniqueFilename(String originalFilename) {
         log.debug("Generated unique filename: {}", originalFilename);
         return UUID.randomUUID() + "_" + originalFilename;
     }
 
+    /**
+     * Проверяет, соответствует ли размер файла допустимым ограничениям.
+     *
+     * @param file Файл для проверки
+     * @return true, если размер файла соответствует допустимым ограничениям, иначе false
+     */
     public boolean isValidSize(MultipartFile file) {
         boolean isValid = file.getSize() <= MAX_SIZE;
         if (!isValid) {
@@ -141,6 +152,12 @@ public class ImageServiceImpl implements ImageService {
         return isValid;
     }
 
+    /**
+     * Проверяет, соответствует ли тип файла одному из допустимых типов (JPEG или PNG).
+     *
+     * @param file Файл для проверки
+     * @return true, если тип файла соответствует допустимым типам, иначе false
+     */
     public boolean isValidType(MultipartFile file) {
         String contentType = file.getContentType();
         boolean isValid = contentType.equals("image/jpeg") || contentType.equals("image/png");
@@ -152,6 +169,12 @@ public class ImageServiceImpl implements ImageService {
         return isValid;
     }
 
+    /**
+     * Проверяет, не содержит ли имя файла запрещенных символов.
+     *
+     * @param filename Имя файла для проверки
+     * @return true, если имя файла не содержит запрещенных символов, иначе false
+     */
     public boolean isValidName(String filename) {
         boolean isValid = !filename.contains("..") && !filename.matches(".*[<>\"].*");
         if (!isValid) {
